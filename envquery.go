@@ -28,3 +28,13 @@ func NewEnvQuery() EnvQuery {
 	return EnvQuery{parseVars()}
 }
 
+// GetAllKeys retrieves a slice of all environment variables keys
+func (e EnvQuery) GetAllKeys() []string {
+	results := []string{}
+
+	for k := range *e.envs {
+		results = append(results, k)
+	}
+
+	return results
+}
