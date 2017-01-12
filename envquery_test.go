@@ -33,6 +33,24 @@ func TestNewEnQuery(t *testing.T) {
 	assert.Contains(t, "=test=", (*result.envs)["TEST2"], "Must extract and parse environment variables")
 }
 
+func TestGetAllValues(t *testing.T) {
+	setTestingEnvs()
+
+	q := NewEnvQuery()
+
+	keys := q.GetAllValues()
+
+	results := []string{}
+
+	for _, v := range keys {
+		if v == "test" || v == "=test=" {
+			results = append(results, v)
+		}
+	}
+
+	assert.Len(t, results, 2, "Must contains 2 elements")
+}
+
 func TestGetAllKeys(t *testing.T) {
 	setTestingEnvs()
 
