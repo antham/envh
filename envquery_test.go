@@ -10,8 +10,8 @@ import (
 
 func setTestingEnvs() {
 	datas := map[string]string{
-		"TEST1": "test",
-		"TEST2": "=test=",
+		"TEST1": "test1",
+		"TEST2": "=test2=",
 	}
 
 	for k, v := range datas {
@@ -27,15 +27,15 @@ func TestParseVars(t *testing.T) {
 	setTestingEnvs()
 	result := parseVars()
 
-	assert.Equal(t, "test", (*result)["TEST1"], "Must extract and parse environment variables")
-	assert.Contains(t, "=test=", (*result)["TEST2"], "Must extract and parse environment variables")
+	assert.Equal(t, "test1", (*result)["TEST1"], "Must extract and parse environment variables")
+	assert.Contains(t, "=test2=", (*result)["TEST2"], "Must extract and parse environment variables")
 }
 
 func TestNewEnQuery(t *testing.T) {
 	result := NewEnvQuery()
 
-	assert.Equal(t, "test", (*result.envs)["TEST1"], "Must extract and parse environment variables")
-	assert.Contains(t, "=test=", (*result.envs)["TEST2"], "Must extract and parse environment variables")
+	assert.Equal(t, "test1", (*result.envs)["TEST1"], "Must extract and parse environment variables")
+	assert.Contains(t, "=test2=", (*result.envs)["TEST2"], "Must extract and parse environment variables")
 }
 
 func TestGetAllValues(t *testing.T) {
@@ -48,7 +48,7 @@ func TestGetAllValues(t *testing.T) {
 	results := []string{}
 
 	for _, v := range keys {
-		if v == "test" || v == "=test=" {
+		if v == "test1" || v == "=test2=" {
 			results = append(results, v)
 		}
 	}
@@ -83,7 +83,7 @@ func TestFindEntries(t *testing.T) {
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Len(t, keys, 1, "Must contains 1 elements")
-	assert.Equal(t, "test", keys["TEST1"], "Must have env key and value")
+	assert.Equal(t, "test1", keys["TEST1"], "Must have env key and value")
 
 	_, err = q.FindEntries("?")
 
