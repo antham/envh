@@ -4,6 +4,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/Sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +15,11 @@ func setTestingEnvs() {
 	}
 
 	for k, v := range datas {
-		os.Setenv(k, v)
+		err := os.Setenv(k, v)
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
 	}
 }
 
