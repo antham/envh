@@ -16,3 +16,15 @@ func parseVars() *map[string]string {
 
 	return &results
 }
+
+// EnvQuery manage environment variables
+// by giving high level api to interact with them
+type EnvQuery struct {
+	envs *map[string]string
+}
+
+// NewEnvQuery creates a new EnvQuery instance
+func NewEnvQuery() EnvQuery {
+	return EnvQuery{parseVars()}
+}
+
