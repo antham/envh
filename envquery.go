@@ -2,6 +2,7 @@ package envquery
 
 import (
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -37,4 +38,24 @@ func (e EnvQuery) GetAllKeys() []string {
 	}
 
 	return results
+}
+
+// FindEntries retrieves all keys matching a given regexp and their
+// corresponding values
+func (e EnvQuery) FindEntries(reg string) (map[string]string, error) {
+	results := map[string]string{}
+
+	r, err := regexp.Compile(reg)
+
+	if err != nil {
+		return results, err
+	}
+
+	for k, v := range *e.envs {
+		if r.MatchString(k) {
+			results[k] = v
+		}
+	}
+
+	return results, nil
 }
