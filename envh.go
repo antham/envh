@@ -18,19 +18,19 @@ func parseVars() *map[string]string {
 	return &results
 }
 
-// EnvQuery manage environment variables
+// Env manage environment variables
 // by giving high level api to interact with them
-type EnvQuery struct {
+type Env struct {
 	envs *map[string]string
 }
 
-// NewEnvQuery creates a new EnvQuery instance
-func NewEnvQuery() EnvQuery {
-	return EnvQuery{parseVars()}
+// NewEnv creates a new Env instance
+func NewEnv() Env {
+	return Env{parseVars()}
 }
 
 // GetAllValues retrieves a slice of all environment variables values
-func (e EnvQuery) GetAllValues() []string {
+func (e Env) GetAllValues() []string {
 	results := []string{}
 
 	for _, v := range *e.envs {
@@ -41,7 +41,7 @@ func (e EnvQuery) GetAllValues() []string {
 }
 
 // GetAllKeys retrieves a slice of all environment variables keys
-func (e EnvQuery) GetAllKeys() []string {
+func (e Env) GetAllKeys() []string {
 	results := []string{}
 
 	for k := range *e.envs {
@@ -53,7 +53,7 @@ func (e EnvQuery) GetAllKeys() []string {
 
 // FindEntries retrieves all keys matching a given regexp and their
 // corresponding values
-func (e EnvQuery) FindEntries(reg string) (map[string]string, error) {
+func (e Env) FindEntries(reg string) (map[string]string, error) {
 	results := map[string]string{}
 
 	r, err := regexp.Compile(reg)

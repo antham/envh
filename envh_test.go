@@ -32,7 +32,7 @@ func TestParseVars(t *testing.T) {
 }
 
 func TestNewEnQuery(t *testing.T) {
-	result := NewEnvQuery()
+	result := NewEnv()
 
 	assert.Equal(t, "test1", (*result.envs)["TEST1"], "Must extract and parse environment variables")
 	assert.Contains(t, "=test2=", (*result.envs)["TEST2"], "Must extract and parse environment variables")
@@ -41,7 +41,7 @@ func TestNewEnQuery(t *testing.T) {
 func TestGetAllValues(t *testing.T) {
 	setTestingEnvs()
 
-	q := NewEnvQuery()
+	q := NewEnv()
 
 	keys := q.GetAllValues()
 
@@ -59,7 +59,7 @@ func TestGetAllValues(t *testing.T) {
 func TestGetAllKeys(t *testing.T) {
 	setTestingEnvs()
 
-	q := NewEnvQuery()
+	q := NewEnv()
 
 	keys := q.GetAllKeys()
 
@@ -77,7 +77,7 @@ func TestGetAllKeys(t *testing.T) {
 func TestFindEntries(t *testing.T) {
 	setTestingEnvs()
 
-	q := NewEnvQuery()
+	q := NewEnv()
 
 	keys, err := q.FindEntries(".*?1")
 
