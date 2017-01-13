@@ -1,10 +1,18 @@
 package envh
 
 import (
+	"fmt"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 )
+
+// ErrNotFound is triggered when environment variable cannot be found
+var ErrNotFound = fmt.Errorf("Variable not found")
+
+// ErrWrongType is triggered when we try to convert variable to a wrong type
+var ErrWrongType = fmt.Errorf("Variable can't be converted")
 
 func parseVars() *map[string]string {
 	results := map[string]string{}
@@ -49,6 +57,70 @@ func (e Env) GetAllKeys() []string {
 	}
 
 	return results
+}
+
+// GetString return a string if variable exists
+// or an error otherwise
+func (e Env) GetString(key string) (string, error) {
+	if v, ok := (*e.envs)[key]; ok {
+		return v, nil
+	}
+
+	return "", ErrNotFound
+}
+
+// GetInt return an integer if variable exists
+// or an error if value is not an integer or doesn't exist
+func (e Env) GetInt(key string) (int, error) {
+	v, ok := (*e.envs)[key]
+
+	if !ok {
+		return 0, ErrNotFound
+	}
+
+	i, err := strconv.Atoi(v)
+
+	if err != nil {
+		return 0, ErrWrongType
+	}
+
+	return i, nil
+}
+
+// GetFloat return a float if variable exists
+// or an error if value is not a float or doesn't exist
+func (e Env) GetFloat(key string) (float32, error) {
+	v, ok := (*e.envs)[key]
+
+	if !ok {
+		return 0, ErrNotFound
+	}
+
+	f, err := strconv.ParseFloat(v, 32)
+
+	if err != nil {
+		return 0, ErrWrongType
+	}
+
+	return float32(f), nil
+}
+
+// GetBool return a boolean if variable exists
+// or an error if value is not a boolean or doesn't exist
+func (e Env) GetBool(key string) (bool, error) {
+	v, ok := (*e.envs)[key]
+
+	if !ok {
+		return false, ErrNotFound
+	}
+
+	b, err := strconv.ParseBool(v)
+
+	if err != nil {
+		return false, ErrWrongType
+	}
+
+	return b, nil
 }
 
 // FindEntries retrieves all keys matching a given regexp and their

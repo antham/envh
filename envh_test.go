@@ -89,3 +89,94 @@ func TestFindEntries(t *testing.T) {
 
 	assert.EqualError(t, err, "error parsing regexp: missing argument to repetition operator: `?`", "Must return an error when regexp is unvalid")
 }
+
+func TestGetString(t *testing.T) {
+	setTestingEnvs()
+
+	q := NewEnv()
+
+	value, err := q.GetString("TEST1")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, "test1", value, "Must return value")
+
+	value, err = q.GetString("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, "", value, "Must return empty string")
+}
+
+func TestGetInt(t *testing.T) {
+	err := os.Setenv("TEST3", "1")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	q := NewEnv()
+
+	value, err := q.GetInt("TEST3")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, 1, value, "Must return value")
+
+	value, err = q.GetInt("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, 0, value, "Must return value")
+
+	value, err = q.GetInt("TEST1")
+
+	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be found")
+	assert.Equal(t, 0, value, "Must return empty string")
+}
+
+func TestGetBool(t *testing.T) {
+	err := os.Setenv("TEST4", "true")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	q := NewEnv()
+
+	value, err := q.GetBool("TEST4")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, true, value, "Must return value")
+
+	value, err = q.GetBool("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, false, value, "Must return value")
+
+	value, err = q.GetBool("TEST1")
+
+	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be found")
+	assert.Equal(t, false, value, "Must return empty string")
+}
+
+func TestGetFloat(t *testing.T) {
+	err := os.Setenv("TEST5", "0.01")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	q := NewEnv()
+
+	value, err := q.GetFloat("TEST5")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, float32(0.01), value, "Must return value")
+
+	value, err = q.GetFloat("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, float32(0), value, "Must return value")
+
+	value, err = q.GetFloat("TEST1")
+
+	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be found")
+	assert.Equal(t, float32(0), value, "Must return empty string")
+}
