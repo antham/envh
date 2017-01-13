@@ -5,6 +5,9 @@ gometalinter:
 	gometalinter -D gotype --vendor --deadline=240s --dupl-threshold=200 -e '_string' -j 5 ./...
 
 run-tests:
+	./test.sh
+
+run-tests-quickly:
 	go test -v $(shell glide nv)
 
 test-all: gometalinter run-tests
