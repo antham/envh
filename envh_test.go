@@ -1,4 +1,4 @@
-package envquery
+package envh
 
 import (
 	"os"
