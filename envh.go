@@ -142,3 +142,85 @@ func (e Env) FindEntries(reg string) (map[string]string, error) {
 
 	return results, nil
 }
+
+type node struct {
+	childs []*node
+	key    string
+	value  string
+	root   bool
+}
+
+func newNode() *node {
+	return &node{childs: []*node{}}
+}
+
+func newRootNode() *node {
+	return &node{childs: []*node{}, root: true}
+}
+
+func (n *node) findAllChildsWithKey(key string) *[]*node {
+	results := []*node{}
+	nodes := n.childs
+
+	for {
+		tank := []*node{}
+
+		for _, node := range nodes {
+			if node.key == key {
+				results = append(results, node)
+			}
+
+			tank = append(tank, node.childs...)
+		}
+
+		nodes = tank
+
+		if len(tank) == 0 {
+			return &results
+		}
+	}
+}
+
+func (n *node) appendChildToTree(child *node, keys []string) bool {
+	var exists bool
+	var next *node
+	current := n
+
+	for _, key := range keys {
+		next, exists = current.findChildWithKey(key)
+
+		if !exists {
+			return false
+		}
+
+		current = next
+	}
+
+	if _, exists := current.findChildWithKey(child.key); exists {
+		return false
+	}
+
+	current.appendChild(child)
+
+	return true
+}
+
+func (n *node) findChildWithKey(key string) (*node, bool) {
+	for _, child := range n.childs {
+		if child.key == key {
+			return child, true
+		}
+	}
+
+	return nil, false
+}
+
+func (n *node) appendChild(child *node) bool {
+	if _, ok := n.findChildWithKey(child.key); ok {
+		return false
+	}
+
+	n.childs = append(n.childs, child)
+
+	return true
+}
