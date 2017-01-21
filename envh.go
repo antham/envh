@@ -29,6 +29,62 @@ func parseVars() *map[string]string {
 	return &results
 }
 
+func getString(fun func() (string, bool)) (string, error) {
+	if v, ok := fun(); ok {
+		return v, nil
+	}
+
+	return "", ErrNotFound
+}
+
+func getInt(fun func() (string, bool)) (int, error) {
+	v, ok := fun()
+
+	if !ok {
+		return 0, ErrNotFound
+	}
+
+	i, err := strconv.Atoi(v)
+
+	if err != nil {
+		return 0, ErrWrongType
+	}
+
+	return i, nil
+}
+
+func getFloat(fun func() (string, bool)) (float32, error) {
+	v, ok := fun()
+
+	if !ok {
+		return 0, ErrNotFound
+	}
+
+	f, err := strconv.ParseFloat(v, 32)
+
+	if err != nil {
+		return 0, ErrWrongType
+	}
+
+	return float32(f), nil
+}
+
+func getBool(fun func() (string, bool)) (bool, error) {
+	v, ok := fun()
+
+	if !ok {
+		return false, ErrNotFound
+	}
+
+	b, err := strconv.ParseBool(v)
+
+	if err != nil {
+		return false, ErrWrongType
+	}
+
+	return b, nil
+}
+
 // Env manage environment variables
 // by giving high level api to interact with them
 type Env struct {
@@ -65,65 +121,41 @@ func (e Env) GetAllKeys() []string {
 // GetString return a string if variable exists
 // or an error otherwise
 func (e Env) GetString(key string) (string, error) {
-	if v, ok := (*e.envs)[key]; ok {
-		return v, nil
-	}
+	return getString(func() (string, bool) {
+		v, ok := (*e.envs)[key]
 
-	return "", ErrNotFound
+		return v, ok
+	})
 }
 
 // GetInt return an integer if variable exists
 // or an error if value is not an integer or doesn't exist
 func (e Env) GetInt(key string) (int, error) {
-	v, ok := (*e.envs)[key]
+	return getInt(func() (string, bool) {
+		v, ok := (*e.envs)[key]
 
-	if !ok {
-		return 0, ErrNotFound
-	}
-
-	i, err := strconv.Atoi(v)
-
-	if err != nil {
-		return 0, ErrWrongType
-	}
-
-	return i, nil
+		return v, ok
+	})
 }
 
 // GetFloat return a float if variable exists
 // or an error if value is not a float or doesn't exist
 func (e Env) GetFloat(key string) (float32, error) {
-	v, ok := (*e.envs)[key]
+	return getFloat(func() (string, bool) {
+		v, ok := (*e.envs)[key]
 
-	if !ok {
-		return 0, ErrNotFound
-	}
-
-	f, err := strconv.ParseFloat(v, 32)
-
-	if err != nil {
-		return 0, ErrWrongType
-	}
-
-	return float32(f), nil
+		return v, ok
+	})
 }
 
 // GetBool return a boolean if variable exists
 // or an error if value is not a boolean or doesn't exist
 func (e Env) GetBool(key string) (bool, error) {
-	v, ok := (*e.envs)[key]
+	return getBool(func() (string, bool) {
+		v, ok := (*e.envs)[key]
 
-	if !ok {
-		return false, ErrNotFound
-	}
-
-	b, err := strconv.ParseBool(v)
-
-	if err != nil {
-		return false, ErrWrongType
-	}
-
-	return b, nil
+		return v, ok
+	})
 }
 
 // FindEntries retrieves all keys matching a given regexp and their
