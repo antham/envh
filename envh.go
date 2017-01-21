@@ -219,6 +219,26 @@ func (n *node) findAllChildsByKey(key string, withValue bool) *[]*node {
 	}
 }
 
+func (n *node) findChildByKeyChain(keyChain *[]string) (*node, bool) {
+	if len(*keyChain) == 0 {
+		return nil, false
+	}
+
+	current := n
+
+	for _, key := range *keyChain {
+		node, exists := current.findChildByKey(key)
+
+		if !exists {
+			return nil, false
+		}
+
+		current = node
+	}
+
+	return current, true
+}
+
 func (n *node) findChildByKey(key string) (*node, bool) {
 	for _, child := range n.childs {
 		if child.key == key {

@@ -335,3 +335,39 @@ func TestCreateTreeFromDelimiterFilteringByRegexp(t *testing.T) {
 
 	assert.Len(t, *nodes, 2, "Must contains 2 elements")
 }
+
+func TestFindChildByKeyChain(t *testing.T) {
+	datas := map[string]string{
+		"ENVH_TEST1_TEST2_TEST3": "test1",
+		"ENVH_TEST1_TEST2_TEST4": "test2",
+		"ENVH_TEST1_TEST5_TEST6": "test3",
+	}
+
+	for k, v := range datas {
+		err := os.Setenv(k, v)
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
+
+	n, err := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	node, exists := n.findChildByKeyChain(&[]string{"ENVH", "TEST1", "TEST5", "TEST6"})
+
+	assert.True(t, exists, "Must find a node from this key chain")
+	assert.Equal(t, "test3", node.value, "Must return correct node")
+
+	for _, keyChain := range [][]string{
+		[]string{},
+		[]string{"ENV"},
+		[]string{"ENVH", "TEST1", "TEST7", "TEST8"},
+		[]string{"ENVH", "TEST1", "TEST6", "TEST8"},
+	} {
+		_, exists := n.findChildByKeyChain(&keyChain)
+
+		assert.False(t, exists, "Must not find a node from this key chain")
+	}
+}
