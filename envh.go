@@ -199,7 +199,7 @@ func (n *node) findAllChildsByKey(key string, withValue bool) *[]*node {
 	nodes := n.childs
 
 	for {
-		tank := []*node{}
+		carry := []*node{}
 
 		for _, node := range nodes {
 			if node.key == key {
@@ -208,12 +208,12 @@ func (n *node) findAllChildsByKey(key string, withValue bool) *[]*node {
 				}
 			}
 
-			tank = append(tank, node.childs...)
+			carry = append(carry, node.childs...)
 		}
 
-		nodes = tank
+		nodes = carry
 
-		if len(tank) == 0 {
+		if len(carry) == 0 {
 			return &results
 		}
 	}
