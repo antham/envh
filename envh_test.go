@@ -24,6 +24,24 @@ func setTestingEnvs() {
 	}
 }
 
+func setTestingEnvsForTree() {
+	datas := map[string]string{
+		"ENVH_TEST1_TEST2_TEST3": "test1",
+		"ENVH_TEST1_TEST2_TEST4": "test2",
+		"ENVH_TEST1_TEST5_TEST6": "test3",
+		"ENVH_TEST1_TEST7_TEST2": "test4",
+		"ENVH_TEST1":             "test5",
+	}
+
+	for k, v := range datas {
+		err := os.Setenv(k, v)
+
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
+}
+
 func TestParseVars(t *testing.T) {
 	setTestingEnvs()
 	result := parseVars()
@@ -284,21 +302,7 @@ func TestFindAllChildsByKey(t *testing.T) {
 }
 
 func TestCreateTreeFromDelimiterFilteringByRegexp(t *testing.T) {
-	datas := map[string]string{
-		"ENVH_TEST1_TEST2_TEST3": "test1",
-		"ENVH_TEST1_TEST2_TEST4": "test2",
-		"ENVH_TEST1_TEST5_TEST6": "test3",
-		"ENVH_TEST1_TEST7_TEST2": "test4",
-		"ENVH_TEST1":             "test5",
-	}
-
-	for k, v := range datas {
-		err := os.Setenv(k, v)
-
-		if err != nil {
-			logrus.Fatal(err)
-		}
-	}
+	setTestingEnvsForTree()
 
 	n, err := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
 
@@ -337,19 +341,7 @@ func TestCreateTreeFromDelimiterFilteringByRegexp(t *testing.T) {
 }
 
 func TestFindChildByKeyChain(t *testing.T) {
-	datas := map[string]string{
-		"ENVH_TEST1_TEST2_TEST3": "test1",
-		"ENVH_TEST1_TEST2_TEST4": "test2",
-		"ENVH_TEST1_TEST5_TEST6": "test3",
-	}
-
-	for k, v := range datas {
-		err := os.Setenv(k, v)
-
-		if err != nil {
-			logrus.Fatal(err)
-		}
-	}
+	setTestingEnvsForTree()
 
 	n, err := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
 
