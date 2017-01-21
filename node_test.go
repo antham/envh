@@ -111,9 +111,7 @@ func TestFindAllChildsByKey(t *testing.T) {
 func TestFindChildByKeyChain(t *testing.T) {
 	setTestingEnvsForTree()
 
-	n, err := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
-
-	assert.NoError(t, err, "Must return no errors")
+	n := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
 
 	node, exists := n.findChildByKeyChain(&[]string{"ENVH", "TEST1", "TEST5", "TEST6"})
 

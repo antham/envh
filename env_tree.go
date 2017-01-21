@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) (*node, error) {
+func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
 
 	for key, value := range *parseVars() {
@@ -25,16 +25,12 @@ func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter stri
 				}
 			}
 
-			if current.hasValue {
-				return nil, ErrDuplicated
-			}
-
 			current.hasValue = true
 			current.value = value
 		}
 	}
 
-	return rootNode, nil
+	return rootNode
 }
 
 func getChildValueByKeyChain(node *node, keyChain *[]string) func() (string, bool) {
