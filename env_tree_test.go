@@ -18,6 +18,12 @@ func TestCreateTreeFromDelimiterFilteringByRegexp(t *testing.T) {
 		assert.Len(t, *nodes, 1, "Must contains 1 element")
 		assert.Equal(t, expected, (*nodes)[0].value, "Must have correct value")
 	}
+}
+
+func TestCreateTreeFromDelimiterFilteringByRegexpAndFindAllKeysWithAKey(t *testing.T) {
+	setTestingEnvsForTree()
+
+	n := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
 
 	nodes := n.findAllChildsByKey("TEST2", false)
 
