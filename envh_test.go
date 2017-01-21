@@ -2,6 +2,7 @@ package envh
 
 import (
 	"os"
+	"regexp"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
@@ -191,7 +192,7 @@ func TestCreateANode(t *testing.T) {
 	assert.Equal(t, *rootNode, node{childs: []*node{}, root: true}, "Must creates a new root node")
 }
 
-func TestFindChildWithKey(t *testing.T) {
+func TestFindChildByKey(t *testing.T) {
 	root := newRootNode()
 
 	node := newNode()
@@ -199,12 +200,12 @@ func TestFindChildWithKey(t *testing.T) {
 	node.value = "value"
 	root.appendChild(node)
 
-	result, exists := root.findChildWithKey("test")
+	result, exists := root.findChildByKey("test")
 
 	assert.True(t, exists, "Must return true cause element was found")
 	assert.Equal(t, node, result, "Must return child node with key test")
 
-	_, exists = root.findChildWithKey("test1")
+	_, exists = root.findChildByKey("test1")
 
 	assert.False(t, exists, "Must return false cause element was not found")
 }
@@ -232,7 +233,7 @@ func TestAppendChild(t *testing.T) {
 	assert.Equal(t, node, root.childs[0], "Must have node added before")
 }
 
-func TestFindAllChildsWithKey(t *testing.T) {
+func TestFindAllChildsByKey(t *testing.T) {
 	nodes := map[string]*node{}
 
 	root := newRootNode()
@@ -277,56 +278,60 @@ func TestFindAllChildsWithKey(t *testing.T) {
 		nodes[accumulatedKey] = t
 	}
 
-	results := root.findAllChildsWithKey("test3")
+	results := root.findAllChildsByKey("test3", false)
 
 	assert.Equal(t, []*node{nodes["4.5.6.3"], nodes["1.2.3"]}, *results, "Must recurse over tree to find keys")
 }
 
-func TestAppendChildToTree(t *testing.T) {
-	nodes := map[string]*node{}
-
-	root := newRootNode()
-	n := root
-
-	var accumulatedKey string
-
-	for _, i := range []string{"1", "2", "3"} {
-		t := newNode()
-		t.key = "test" + i
-		t.value = "value" + i
-		n.appendChild(t)
-
-		n = t
-
-		if len(accumulatedKey) == 0 {
-			accumulatedKey = i
-		} else {
-			accumulatedKey += "." + i
-		}
-
-		nodes[accumulatedKey] = t
+func TestCreateTreeFromDelimiterFilteringByRegexp(t *testing.T) {
+	datas := map[string]string{
+		"ENVH_TEST1_TEST2_TEST3": "test1",
+		"ENVH_TEST1_TEST2_TEST4": "test2",
+		"ENVH_TEST1_TEST5_TEST6": "test3",
+		"ENVH_TEST1_TEST7_TEST2": "test4",
+		"ENVH_TEST1":             "test5",
 	}
 
-	node4 := newNode()
-	node4.key = "test4"
-	node4.value = "value4"
+	for k, v := range datas {
+		err := os.Setenv(k, v)
 
-	assert.True(t, root.appendChildToTree(node4, []string{"test1", "test2", "test3"}), "Must return true as added element must be successful")
+		if err != nil {
+			logrus.Fatal(err)
+		}
+	}
 
-	assert.Len(t, nodes["1.2.3"].childs, 1, "Must contains 1 element")
-	assert.Equal(t, node4, nodes["1.2.3"].childs[0], "Must append element to node tree")
+	n, err := createTreeFromDelimiterFilteringByRegexp(regexp.MustCompile("ENVH"), "_")
 
-	node5 := newNode()
-	node5.key = "test5"
-	node5.value = "value5"
+	nodes := n.findAllChildsByKey("TEST3", true)
 
-	assert.True(t, root.appendChildToTree(node5, []string{"test1", "test2", "test3"}), "Must return true as added element must be successful")
+	assert.NoError(t, err, "Must return no errors")
+	assert.Len(t, *nodes, 1, "Must contains 1 element")
+	assert.Equal(t, "test1", (*nodes)[0].value, "Must have correct value")
 
-	assert.Len(t, nodes["1.2.3"].childs, 2, "Must contains 2 element")
-	assert.Equal(t, node4, nodes["1.2.3"].childs[0], "Must recurse over tree to find keys")
-	assert.Equal(t, node5, nodes["1.2.3"].childs[1], "Must append element to node tree")
+	nodes = n.findAllChildsByKey("TEST4", true)
 
-	assert.False(t, root.appendChildToTree(node4, []string{"test1", "test2", "test3"}), "Must return false cause an element with this key already exists")
+	assert.Len(t, *nodes, 1, "Must contains 1 element")
+	assert.Equal(t, "test2", (*nodes)[0].value, "Must have correct value")
 
-	assert.Len(t, nodes["1.2.3"].childs, 2, "Must contains 2 element")
+	nodes = n.findAllChildsByKey("TEST6", true)
+
+	assert.Len(t, *nodes, 1, "Must contains 1 element")
+	assert.Equal(t, "test3", (*nodes)[0].value, "Must have correct value")
+
+	nodes = n.findAllChildsByKey("TEST1", true)
+
+	assert.Len(t, *nodes, 1, "Must contains 1 element")
+	assert.Equal(t, "test5", (*nodes)[0].value, "Must have correct value")
+
+	// Find all childs with a value defined
+	nodes = n.findAllChildsByKey("TEST2", true)
+
+	assert.Len(t, *nodes, 1, "Must contains 1 element")
+
+	assert.Equal(t, "test4", (*nodes)[0].value, "Must have correct value")
+
+	// Find all childs with values or not
+	nodes = n.findAllChildsByKey("TEST2", false)
+
+	assert.Len(t, *nodes, 2, "Must contains 2 elements")
 }

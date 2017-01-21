@@ -14,6 +14,9 @@ var ErrNotFound = fmt.Errorf("Variable not found")
 // ErrWrongType is triggered when we try to convert variable to a wrong type
 var ErrWrongType = fmt.Errorf("Variable can't be converted")
 
+// ErrDuplicated is triggered when a variable is already defined in a tree structure
+var ErrDuplicated = fmt.Errorf("Variable was already defined before")
+
 func parseVars() *map[string]string {
 	results := map[string]string{}
 
@@ -144,10 +147,11 @@ func (e Env) FindEntries(reg string) (map[string]string, error) {
 }
 
 type node struct {
-	childs []*node
-	key    string
-	value  string
-	root   bool
+	childs   []*node
+	key      string
+	value    string
+	hasValue bool
+	root     bool
 }
 
 func newNode() *node {
@@ -158,7 +162,7 @@ func newRootNode() *node {
 	return &node{childs: []*node{}, root: true}
 }
 
-func (n *node) findAllChildsWithKey(key string) *[]*node {
+func (n *node) findAllChildsByKey(key string, withValue bool) *[]*node {
 	results := []*node{}
 	nodes := n.childs
 
@@ -167,7 +171,9 @@ func (n *node) findAllChildsWithKey(key string) *[]*node {
 
 		for _, node := range nodes {
 			if node.key == key {
-				results = append(results, node)
+				if withValue && node.hasValue || !withValue {
+					results = append(results, node)
+				}
 			}
 
 			tank = append(tank, node.childs...)
@@ -181,31 +187,7 @@ func (n *node) findAllChildsWithKey(key string) *[]*node {
 	}
 }
 
-func (n *node) appendChildToTree(child *node, keys []string) bool {
-	var exists bool
-	var next *node
-	current := n
-
-	for _, key := range keys {
-		next, exists = current.findChildWithKey(key)
-
-		if !exists {
-			return false
-		}
-
-		current = next
-	}
-
-	if _, exists := current.findChildWithKey(child.key); exists {
-		return false
-	}
-
-	current.appendChild(child)
-
-	return true
-}
-
-func (n *node) findChildWithKey(key string) (*node, bool) {
+func (n *node) findChildByKey(key string) (*node, bool) {
 	for _, child := range n.childs {
 		if child.key == key {
 			return child, true
@@ -216,11 +198,47 @@ func (n *node) findChildWithKey(key string) (*node, bool) {
 }
 
 func (n *node) appendChild(child *node) bool {
-	if _, ok := n.findChildWithKey(child.key); ok {
+	if _, ok := n.findChildByKey(child.key); ok {
 		return false
 	}
 
 	n.childs = append(n.childs, child)
 
 	return true
+}
+
+func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) (*node, error) {
+	rootNode := newRootNode()
+
+	for key, value := range *parseVars() {
+		if reg.MatchString(key) {
+			current := rootNode
+
+			for _, component := range strings.Split(key, delimiter) {
+				n, exists := current.findChildByKey(component)
+
+				if exists {
+					current = n
+				} else {
+					child := newNode()
+					child.key = component
+					current.appendChild(child)
+					current = child
+				}
+			}
+
+			if current.hasValue {
+				return nil, ErrDuplicated
+			}
+
+			current.hasValue = true
+			current.value = value
+		}
+	}
+
+	return rootNode, nil
+}
+
+
+
 }
