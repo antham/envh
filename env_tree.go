@@ -26,6 +26,30 @@ func NewEnvTree(reg string, delimiter string) (EnvTree, error) {
 	return EnvTree{t}, nil
 }
 
+// GetString return a string if variable exists
+// or an error otherwise
+func (e EnvTree) GetString(keyChain ...string) (string, error) {
+	return getString(getChildValueByKeyChain(e.root, &keyChain))
+}
+
+// GetInt return an integer if variable exists
+// or an error if value is not an integer or doesn't exist
+func (e EnvTree) GetInt(keyChain ...string) (int, error) {
+	return getInt(getChildValueByKeyChain(e.root, &keyChain))
+}
+
+// GetFloat return a float if variable exists
+// or an error if value is not a float or doesn't exist
+func (e EnvTree) GetFloat(keyChain ...string) (float32, error) {
+	return getFloat(getChildValueByKeyChain(e.root, &keyChain))
+}
+
+// GetBool return a boolean if variable exists
+// or an error if value is not a boolean or doesn't exist
+func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
+	return getBool(getChildValueByKeyChain(e.root, &keyChain))
+}
+
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
 

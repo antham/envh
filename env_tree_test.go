@@ -55,11 +55,13 @@ func rebuildKeys(n *node, tmp []string, keys *[]string) {
 func TestNewEnvTree(t *testing.T) {
 	setTestingEnvsForTree()
 
-	tree, _ := NewEnvTree("ENVH", "_")
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
 
 	result := []string{}
 
-	rebuildKeys(tree.root, []string{}, &result)
+	rebuildKeys(envTree.root, []string{}, &result)
 
 	expected := []string{
 		"ENVH_TEST1_TEST5_TEST6",
@@ -73,4 +75,94 @@ func TestNewEnvTree(t *testing.T) {
 	sort.Strings(result)
 
 	assert.Equal(t, expected, result, "Must store all environment variables starting with envh in a tree")
+}
+
+func TestGetStringFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_TEST3", "test1")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value, err := envTree.GetString("ENVH", "TEST1", "TEST2", "TEST3")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, "test1", value, "Must return value")
+
+	value, err = envTree.GetString("ENVH_TEST1000")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, "", value, "Must return empty string")
+}
+
+func TestGetIntFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_INT", "1")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value, err := envTree.GetInt("ENVH", "TEST1", "TEST2", "INT")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, 1, value, "Must return value")
+
+	value, err = envTree.GetInt("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, 0, value, "Must return value")
+
+	value, err = envTree.GetInt("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
+	assert.Equal(t, 0, value, "Must return empty string")
+}
+
+func TestGetBoolFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_BOOL", "1")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value, err := envTree.GetBool("ENVH", "TEST1", "TEST2", "BOOL")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, true, value, "Must return value")
+
+	value, err = envTree.GetBool("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, false, value, "Must return value")
+
+	value, err = envTree.GetBool("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
+	assert.Equal(t, false, value, "Must return empty string")
+}
+
+func TestGetFloatFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value, err := envTree.GetFloat("ENVH", "TEST1", "TEST2", "FLOAT")
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, float32(0.01), value, "Must return value")
+
+	value, err = envTree.GetFloat("TEST100")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, float32(0), value, "Must return value")
+
+	value, err = envTree.GetFloat("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
+	assert.Equal(t, float32(0), value, "Must return empty string")
 }
