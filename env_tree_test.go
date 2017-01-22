@@ -2,6 +2,8 @@ package envh
 
 import (
 	"regexp"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -28,4 +30,47 @@ func TestCreateTreeFromDelimiterFilteringByRegexpAndFindAllKeysWithAKey(t *testi
 	nodes := n.findAllChildsByKey("TEST2", false)
 
 	assert.Len(t, *nodes, 2, "Must contains 2 elements")
+}
+
+func TestNewEnvTreeWithAnInvalidRegexp(t *testing.T) {
+	setTestingEnvsForTree()
+
+	_, err := NewEnvTree("**", "_")
+
+	assert.EqualError(t, err, "error parsing regexp: missing argument to repetition operator: `*`", "Must return an error when regexp is invalid")
+}
+
+func rebuildKeys(n *node, tmp []string, keys *[]string) {
+	for _, child := range (*n).childs {
+		t := append(tmp, child.key)
+
+		rebuildKeys(child, t, keys)
+	}
+
+	if n.hasValue {
+		*keys = append(*keys, strings.Join(tmp, "_"))
+	}
+}
+
+func TestNewEnvTree(t *testing.T) {
+	setTestingEnvsForTree()
+
+	tree, _ := NewEnvTree("ENVH", "_")
+
+	result := []string{}
+
+	rebuildKeys(tree.root, []string{}, &result)
+
+	expected := []string{
+		"ENVH_TEST1_TEST5_TEST6",
+		"ENVH_TEST1_TEST2_TEST4",
+		"ENVH_TEST1_TEST2_TEST3",
+		"ENVH_TEST1_TEST7_TEST2",
+		"ENVH_TEST1",
+	}
+
+	sort.Strings(expected)
+	sort.Strings(result)
+
+	assert.Equal(t, expected, result, "Must store all environment variables starting with envh in a tree")
 }

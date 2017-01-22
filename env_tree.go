@@ -5,6 +5,27 @@ import (
 	"strings"
 )
 
+// EnvTree manage environment variables through a tree structure
+// to store a config the same way as in a yaml file or whatever
+// format allows to store a config hierarchically
+type EnvTree struct {
+	root *node
+}
+
+// NewEnvTree creates an environment tree
+// delimiter is used to split key, reg is a regexp used to filter entries
+func NewEnvTree(reg string, delimiter string) (EnvTree, error) {
+	r, err := regexp.Compile(reg)
+
+	if err != nil {
+		return EnvTree{}, err
+	}
+
+	t := createTreeFromDelimiterFilteringByRegexp(r, delimiter)
+
+	return EnvTree{t}, nil
+}
+
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
 
