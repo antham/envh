@@ -5,15 +5,16 @@ import (
 	"strings"
 )
 
-// EnvTree manage environment variables through a tree structure
+// EnvTree manages environment variables through a tree structure
 // to store a config the same way as in a yaml file or whatever
 // format allows to store a config hierarchically
 type EnvTree struct {
 	root *node
 }
 
-// NewEnvTree creates an environment tree
-// delimiter is used to split key, reg is a regexp used to filter entries
+// NewEnvTree creates an environment variable tree.
+// A delimiter is used to split key, reg is a regexp
+// used to filter entries
 func NewEnvTree(reg string, delimiter string) (EnvTree, error) {
 	r, err := regexp.Compile(reg)
 
@@ -26,25 +27,25 @@ func NewEnvTree(reg string, delimiter string) (EnvTree, error) {
 	return EnvTree{t}, nil
 }
 
-// GetString return a string if variable exists
+// GetString returns a string if variable exists
 // or an error otherwise
 func (e EnvTree) GetString(keyChain ...string) (string, error) {
 	return getString(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// GetInt return an integer if variable exists
+// GetInt returns an integer if variable exists
 // or an error if value is not an integer or doesn't exist
 func (e EnvTree) GetInt(keyChain ...string) (int, error) {
 	return getInt(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// GetFloat return a float if variable exists
+// GetFloat returns a float if variable exists
 // or an error if value is not a float or doesn't exist
 func (e EnvTree) GetFloat(keyChain ...string) (float32, error) {
 	return getFloat(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// GetBool return a boolean if variable exists
+// GetBool returns a boolean if variable exists
 // or an error if value is not a boolean or doesn't exist
 func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
 	return getBool(getNodeValueByKeyChain(e.root, &keyChain))
