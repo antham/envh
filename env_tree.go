@@ -51,6 +51,12 @@ func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
 	return getBool(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
+// Exists returns true if sub node exits or false if not
+func (e EnvTree) Exists(keyChain ...string) bool {
+	_, exists := e.root.findNodeByKeyChain(&keyChain)
+
+	return exists
+}
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
 

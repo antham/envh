@@ -166,3 +166,15 @@ func TestGetFloatFromTree(t *testing.T) {
 	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }
+
+func TestExistsFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_TEST3", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	assert.True(t, envTree.Exists("ENVH", "TEST1", "TEST2", "TEST3"), "Must return true if environment node exists")
+
+	assert.False(t, envTree.Exists("ENVH", "TEST1", "TEST2", "TEST10000"), "Must return false if environment node doesn't exist")
+}
