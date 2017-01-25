@@ -4,8 +4,9 @@ import (
 	"regexp"
 )
 
-// Env manage environment variables
-// by giving high level api to interact with them
+// Env manages environment variables
+// by giving a convenient helper
+// to interact with them
 type Env struct {
 	envs *map[string]string
 }
@@ -37,7 +38,7 @@ func (e Env) GetAllKeys() []string {
 	return results
 }
 
-// GetString return a string if variable exists
+// GetString returns a string if variable exists
 // or an error otherwise
 func (e Env) GetString(key string) (string, error) {
 	return getString(func() (string, bool) {
@@ -47,7 +48,7 @@ func (e Env) GetString(key string) (string, error) {
 	})
 }
 
-// GetInt return an integer if variable exists
+// GetInt returns an integer if variable exists
 // or an error if value is not an integer or doesn't exist
 func (e Env) GetInt(key string) (int, error) {
 	return getInt(func() (string, bool) {
@@ -57,7 +58,7 @@ func (e Env) GetInt(key string) (int, error) {
 	})
 }
 
-// GetFloat return a float if variable exists
+// GetFloat returns a float if variable exists
 // or an error if value is not a float or doesn't exist
 func (e Env) GetFloat(key string) (float32, error) {
 	return getFloat(func() (string, bool) {
@@ -67,7 +68,7 @@ func (e Env) GetFloat(key string) (float32, error) {
 	})
 }
 
-// GetBool return a boolean if variable exists
+// GetBool returns a boolean if variable exists
 // or an error if value is not a boolean or doesn't exist
 func (e Env) GetBool(key string) (bool, error) {
 	return getBool(func() (string, bool) {
