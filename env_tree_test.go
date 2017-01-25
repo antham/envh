@@ -178,3 +178,17 @@ func TestExistsFromTree(t *testing.T) {
 
 	assert.False(t, envTree.Exists("ENVH", "TEST1", "TEST2", "TEST10000"), "Must return false if environment node doesn't exist")
 }
+
+func TestHasValueFromTree(t *testing.T) {
+	setEnv("ENVH_TEST10_TEST20_TEST30", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	assert.True(t, envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST30"), "Must return true if environment node has a value")
+
+	assert.False(t, envTree.HasValue("ENVH", "TEST10", "TEST20"), "Must return false if environment node doesn't have value")
+
+	assert.False(t, envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST10000"), "Must return false if environment node doesn't exist")
+}
