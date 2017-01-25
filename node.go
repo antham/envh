@@ -16,7 +16,7 @@ func newRootNode() *node {
 	return &node{childs: []*node{}, root: true}
 }
 
-func (n *node) findAllChildsByKey(key string, withValue bool) *[]*node {
+func (n *node) findAllNodesByKey(key string, withValue bool) *[]*node {
 	results := []*node{}
 	nodes := n.childs
 
@@ -41,7 +41,7 @@ func (n *node) findAllChildsByKey(key string, withValue bool) *[]*node {
 	}
 }
 
-func (n *node) findChildByKeyChain(keyChain *[]string) (*node, bool) {
+func (n *node) findNodeByKeyChain(keyChain *[]string) (*node, bool) {
 	if len(*keyChain) == 0 {
 		return nil, false
 	}
@@ -49,7 +49,7 @@ func (n *node) findChildByKeyChain(keyChain *[]string) (*node, bool) {
 	current := n
 
 	for _, key := range *keyChain {
-		node, exists := current.findChildByKey(key)
+		node, exists := current.findNodeByKey(key)
 
 		if !exists {
 			return nil, false
@@ -61,7 +61,7 @@ func (n *node) findChildByKeyChain(keyChain *[]string) (*node, bool) {
 	return current, true
 }
 
-func (n *node) findChildByKey(key string) (*node, bool) {
+func (n *node) findNodeByKey(key string) (*node, bool) {
 	for _, child := range n.childs {
 		if child.key == key {
 			return child, true
@@ -71,8 +71,8 @@ func (n *node) findChildByKey(key string) (*node, bool) {
 	return nil, false
 }
 
-func (n *node) appendChild(child *node) bool {
-	if _, ok := n.findChildByKey(child.key); ok {
+func (n *node) appendNode(child *node) bool {
+	if _, ok := n.findNodeByKey(child.key); ok {
 		return false
 	}
 
