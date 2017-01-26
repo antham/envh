@@ -70,6 +70,25 @@ func (e EnvTree) HasValue(keyChain ...string) (bool, error) {
 
 	return n.hasValue, nil
 }
+// GetChildrenKeys returns all children keys for a given key chain.
+// If sub node doesn't exist, it returns an error ErrNodeNotFound
+// as second value
+func (e EnvTree) GetChildrenKeys(keyChain ...string) ([]string, error) {
+	n, exists := e.root.findNodeByKeyChain(&keyChain)
+
+	if !exists {
+		return []string{}, ErrNodeNotFound
+	}
+
+	keys := []string{}
+
+	for _, c := range n.children {
+		keys = append(keys, c.key)
+	}
+
+	return keys, nil
+}
+
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
 
