@@ -9,14 +9,14 @@ func getString(fun func() (string, bool)) (string, error) {
 		return v, nil
 	}
 
-	return "", ErrNotFound
+	return "", ErrVariableNotFound
 }
 
 func getInt(fun func() (string, bool)) (int, error) {
 	v, ok := fun()
 
 	if !ok {
-		return 0, ErrNotFound
+		return 0, ErrVariableNotFound
 	}
 
 	i, err := strconv.Atoi(v)
@@ -32,7 +32,7 @@ func getFloat(fun func() (string, bool)) (float32, error) {
 	v, ok := fun()
 
 	if !ok {
-		return 0, ErrNotFound
+		return 0, ErrVariableNotFound
 	}
 
 	f, err := strconv.ParseFloat(v, 32)
@@ -48,7 +48,7 @@ func getBool(fun func() (string, bool)) (bool, error) {
 	v, ok := fun()
 
 	if !ok {
-		return false, ErrNotFound
+		return false, ErrVariableNotFound
 	}
 
 	b, err := strconv.ParseBool(v)

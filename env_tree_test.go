@@ -186,9 +186,17 @@ func TestHasValueFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must returns no error")
 
-	assert.True(t, envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST30"), "Must return true if environment node has a value")
+	v, err := envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST30")
 
-	assert.False(t, envTree.HasValue("ENVH", "TEST10", "TEST20"), "Must return false if environment node doesn't have value")
+	assert.NoError(t, err, "Must returns no error")
+	assert.True(t, v, "Must return true if environment node has a value")
 
-	assert.False(t, envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST10000"), "Must return false if environment node doesn't exist")
+	v, err = envTree.HasValue("ENVH", "TEST10", "TEST20")
+
+	assert.NoError(t, err, "Must returns no error")
+	assert.False(t, v, "Must return false if environment node doesn't have value")
+
+	_, err = envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST10000")
+
+	assert.EqualError(t, err, ErrNodeNotFound.Error(), "Must returns an error, node doesn't exists")
 }

@@ -4,8 +4,11 @@ import (
 	"fmt"
 )
 
-// ErrNotFound is triggered when environment variable cannot be found
-var ErrNotFound = fmt.Errorf("Variable not found")
+// ErrVariableNotFound is triggered when environment variable cannot be found
+var ErrVariableNotFound = fmt.Errorf("Variable not found")
+
+// ErrNodeNotFound is triggered when tree node cannot be found
+var ErrNodeNotFound = fmt.Errorf("Node not found")
 
 // ErrWrongType is triggered when we try to convert variable to a wrong type
 var ErrWrongType = fmt.Errorf("Variable can't be converted")

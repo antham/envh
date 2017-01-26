@@ -59,17 +59,16 @@ func (e EnvTree) Exists(keyChain ...string) bool {
 }
 
 // HasValue returns true if sub node has a value or false if not.
-// If sub node doesn't exist, it returns false as well, so you must
-// first ensure node exists using Exists method to be sure a false
-// value really means no value
-func (e EnvTree) HasValue(keyChain ...string) bool {
+// If sub node doesn't exist, it returns an error ErrNodeNotFound
+// as second value
+func (e EnvTree) HasValue(keyChain ...string) (bool, error) {
 	n, exists := e.root.findNodeByKeyChain(&keyChain)
 
 	if !exists {
-		return false
+		return false, ErrNodeNotFound
 	}
 
-	return n.hasValue
+	return n.hasValue, nil
 }
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
