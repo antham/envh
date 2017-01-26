@@ -10,11 +10,11 @@ import (
 func TestCreateANode(t *testing.T) {
 	n := newNode()
 
-	assert.Equal(t, *n, node{childs: []*node{}}, "Must creates a new node")
+	assert.Equal(t, *n, node{children: []*node{}}, "Must creates a new node")
 
 	rootNode := newRootNode()
 
-	assert.Equal(t, *rootNode, node{childs: []*node{}, root: true}, "Must creates a new root node")
+	assert.Equal(t, *rootNode, node{children: []*node{}, root: true}, "Must creates a new root node")
 }
 
 func TestFindNodeByKey(t *testing.T) {
@@ -45,7 +45,7 @@ func TestAppendNode(t *testing.T) {
 	result := root.appendNode(node)
 
 	assert.True(t, result, "Must return true cause element was successfully added")
-	assert.Equal(t, node, root.childs[0], "Must have node added as child")
+	assert.Equal(t, node, root.children[0], "Must have node added as child")
 
 	node2 := newNode()
 	node2.key = "test"
@@ -54,8 +54,8 @@ func TestAppendNode(t *testing.T) {
 	result = root.appendNode(node2)
 
 	assert.False(t, result, "Must return false cause an element with this key already exists")
-	assert.Len(t, root.childs, 1, "Must still have one node")
-	assert.Equal(t, node, root.childs[0], "Must have node added before")
+	assert.Len(t, root.children, 1, "Must still have one node")
+	assert.Equal(t, node, root.children[0], "Must have node added before")
 }
 
 func TestFindAllNodesByKey(t *testing.T) {

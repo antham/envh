@@ -41,7 +41,7 @@ func TestNewEnvTreeWithAnInvalidRegexp(t *testing.T) {
 }
 
 func rebuildKeys(n *node, tmp []string, keys *[]string) {
-	for _, child := range (*n).childs {
+	for _, child := range (*n).children {
 		t := append(tmp, child.key)
 
 		rebuildKeys(child, t, keys)

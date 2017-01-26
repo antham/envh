@@ -1,7 +1,7 @@
 package envh
 
 type node struct {
-	childs   []*node
+	children []*node
 	key      string
 	value    string
 	hasValue bool
@@ -9,16 +9,16 @@ type node struct {
 }
 
 func newNode() *node {
-	return &node{childs: []*node{}}
+	return &node{children: []*node{}}
 }
 
 func newRootNode() *node {
-	return &node{childs: []*node{}, root: true}
+	return &node{children: []*node{}, root: true}
 }
 
 func (n *node) findAllNodesByKey(key string, withValue bool) *[]*node {
 	results := []*node{}
-	nodes := n.childs
+	nodes := n.children
 
 	for {
 		carry := []*node{}
@@ -30,7 +30,7 @@ func (n *node) findAllNodesByKey(key string, withValue bool) *[]*node {
 				}
 			}
 
-			carry = append(carry, node.childs...)
+			carry = append(carry, node.children...)
 		}
 
 		nodes = carry
@@ -62,7 +62,7 @@ func (n *node) findNodeByKeyChain(keyChain *[]string) (*node, bool) {
 }
 
 func (n *node) findNodeByKey(key string) (*node, bool) {
-	for _, child := range n.childs {
+	for _, child := range n.children {
 		if child.key == key {
 			return child, true
 		}
@@ -76,7 +76,7 @@ func (n *node) appendNode(child *node) bool {
 		return false
 	}
 
-	n.childs = append(n.childs, child)
+	n.children = append(n.children, child)
 
 	return true
 }
