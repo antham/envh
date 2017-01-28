@@ -65,7 +65,7 @@ func (e EnvTree) HasValue(keyChain ...string) (bool, error) {
 	n, exists := e.root.findNodeByKeyChain(&keyChain)
 
 	if !exists {
-		return false, ErrNodeNotFound
+		return false, NodeNotFoundError{keyChain}
 	}
 
 	return n.hasValue, nil
@@ -81,7 +81,7 @@ func (e EnvTree) GetSubTree(keyChain ...string) (EnvTree, error) {
 		return EnvTree{n}, nil
 	}
 
-	return EnvTree{}, ErrNodeNotFound
+	return EnvTree{}, NodeNotFoundError{keyChain}
 }
 
 // GetChildrenKeys returns all children keys for a given key chain.
@@ -91,7 +91,7 @@ func (e EnvTree) GetChildrenKeys(keyChain ...string) ([]string, error) {
 	n, exists := e.root.findNodeByKeyChain(&keyChain)
 
 	if !exists {
-		return []string{}, ErrNodeNotFound
+		return []string{}, NodeNotFoundError{keyChain}
 	}
 
 	keys := []string{}

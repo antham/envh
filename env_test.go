@@ -105,7 +105,7 @@ func TestGetInt(t *testing.T) {
 
 	value, err = q.GetInt("TEST1")
 
-	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be found")
+	assert.EqualError(t, err, `Value "test1" can't be converted to type "int"`, "Must return an error when variable can't be found")
 	assert.Equal(t, 0, value, "Must return empty string")
 }
 
@@ -130,7 +130,7 @@ func TestGetBool(t *testing.T) {
 
 	value, err = q.GetBool("TEST1")
 
-	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be found")
+	assert.EqualError(t, err, `Value "test1" can't be converted to type "bool"`, "Must return an error when variable can't be found")
 	assert.Equal(t, false, value, "Must return empty string")
 }
 
@@ -155,6 +155,6 @@ func TestGetFloat(t *testing.T) {
 
 	value, err = q.GetFloat("TEST1")
 
-	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be found")
+	assert.EqualError(t, err, `Value "test1" can't be converted to type "float"`, "Must return an error when variable can't be found")
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }

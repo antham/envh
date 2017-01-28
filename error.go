@@ -2,16 +2,45 @@ package envh
 
 import (
 	"fmt"
+	"strings"
 )
 
-// ErrVariableNotFound is triggered when environment variable cannot be found
-var ErrVariableNotFound = fmt.Errorf("Variable not found")
+// VariableNotFoundError is triggered when environment variable cannot be found
+type VariableNotFoundError struct {
+}
 
-// ErrNodeNotFound is triggered when tree node cannot be found
-var ErrNodeNotFound = fmt.Errorf("Node not found")
+// Error dump error
+func (e VariableNotFoundError) Error() string {
+	return "Variable not found"
+}
 
-// ErrWrongType is triggered when we try to convert variable to a wrong type
-var ErrWrongType = fmt.Errorf("Variable can't be converted")
+// NodeNotFoundError is triggered when tree node cannot be found
+type NodeNotFoundError struct {
+	KeyChain []string
+}
 
-// ErrDuplicated is triggered when a variable is already defined in a tree structure
-var ErrDuplicated = fmt.Errorf("Variable was already defined before")
+// Error dump error
+func (e NodeNotFoundError) Error() string {
+	return fmt.Sprintf(`No node found at path "%s"`, strings.Join(e.KeyChain, " -> "))
+}
+
+// WrongTypeError is triggered when we try to convert variable to a wrong type
+type WrongTypeError struct {
+	Value interface{}
+	Type  string
+}
+
+// Error dump error
+func (e WrongTypeError) Error() string {
+	return fmt.Sprintf(`Value "%s" can't be converted to type "%s"`, e.Value, e.Type)
+}
+
+// VariableDuplicatedError is triggered when environment variable cannot be found
+type VariableDuplicatedError struct {
+	Variable string
+}
+
+// Error dump error
+func (e VariableDuplicatedError) Error() string {
+	return fmt.Sprintf(`Variable "%s" was already defined before`, e.Variable)
+}

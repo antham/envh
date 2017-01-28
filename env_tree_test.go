@@ -115,7 +115,7 @@ func TestGetIntFromTree(t *testing.T) {
 
 	value, err = envTree.GetInt("ENVH", "TEST1", "TEST2", "STRING")
 
-	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
+	assert.EqualError(t, err, `Value "test" can't be converted to type "int"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, 0, value, "Must return empty string")
 }
 
@@ -139,7 +139,7 @@ func TestGetBoolFromTree(t *testing.T) {
 
 	value, err = envTree.GetBool("ENVH", "TEST1", "TEST2", "STRING")
 
-	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
+	assert.EqualError(t, err, `Value "test" can't be converted to type "bool"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, false, value, "Must return empty string")
 }
 
@@ -163,7 +163,7 @@ func TestGetFloatFromTree(t *testing.T) {
 
 	value, err = envTree.GetFloat("ENVH", "TEST1", "TEST2", "STRING")
 
-	assert.EqualError(t, err, "Variable can't be converted", "Must return an error when variable can't be converted")
+	assert.EqualError(t, err, `Value "test" can't be converted to type "float"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }
 
@@ -198,7 +198,7 @@ func TestHasValueFromTree(t *testing.T) {
 
 	_, err = envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST10000")
 
-	assert.EqualError(t, err, ErrNodeNotFound.Error(), "Must returns an error, node doesn't exists")
+	assert.EqualError(t, err, `No node found at path "ENVH -> TEST10 -> TEST20 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
 
 func TestGetChildrenKeysFromTree(t *testing.T) {
@@ -224,7 +224,7 @@ func TestGetChildrenKeysFromTree(t *testing.T) {
 
 	_, err = envTree.GetChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
 
-	assert.EqualError(t, err, ErrNodeNotFound.Error(), "Must returns an error, node doesn't exists")
+	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
 
 func TestGetSubTreeFromTree(t *testing.T) {
@@ -248,5 +248,5 @@ func TestGetSubTreeFromTree(t *testing.T) {
 
 	_, err = envTree.GetSubTree("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
 
-	assert.EqualError(t, err, ErrNodeNotFound.Error(), "Must returns an error, node doesn't exists")
+	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
