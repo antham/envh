@@ -226,3 +226,27 @@ func TestGetChildrenKeysFromTree(t *testing.T) {
 
 	assert.EqualError(t, err, ErrNodeNotFound.Error(), "Must returns an error, node doesn't exists")
 }
+
+func TestGetSubTreeFromTree(t *testing.T) {
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST16", "test3")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	tree, err := envTree.GetSubTree("ENVH", "TEST11", "TEST12", "TEST13")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	v, err := tree.GetString("TEST14")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	assert.Equal(t, "test1", v, "Must return value corresponding to key TEST14")
+
+	_, err = envTree.GetSubTree("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
+
+	assert.EqualError(t, err, ErrNodeNotFound.Error(), "Must returns an error, node doesn't exists")
+}
