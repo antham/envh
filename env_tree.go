@@ -155,7 +155,7 @@ func (e EnvTree) getValue() func() (string, bool) {
 }
 
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
-	rootNode := newRootNode()
+	rootNode := newNode()
 
 	for key, value := range *parseVars() {
 		if reg.MatchString(key) {

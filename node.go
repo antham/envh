@@ -5,15 +5,10 @@ type node struct {
 	key      string
 	value    string
 	hasValue bool
-	root     bool
 }
 
 func newNode() *node {
 	return &node{children: []*node{}}
-}
-
-func newRootNode() *node {
-	return &node{children: []*node{}, root: true}
 }
 
 func (n *node) findAllNodesByKey(key string, withValue bool) *[]*node {

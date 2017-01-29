@@ -11,14 +11,10 @@ func TestCreateANode(t *testing.T) {
 	n := newNode()
 
 	assert.Equal(t, *n, node{children: []*node{}}, "Must creates a new node")
-
-	rootNode := newRootNode()
-
-	assert.Equal(t, *rootNode, node{children: []*node{}, root: true}, "Must creates a new root node")
 }
 
 func TestFindNodeByKey(t *testing.T) {
-	root := newRootNode()
+	root := newNode()
 
 	node := newNode()
 	node.key = "test"
@@ -36,7 +32,7 @@ func TestFindNodeByKey(t *testing.T) {
 }
 
 func TestAppendNode(t *testing.T) {
-	root := newRootNode()
+	root := newNode()
 
 	node := newNode()
 	node.key = "test"
@@ -61,7 +57,7 @@ func TestAppendNode(t *testing.T) {
 func TestFindAllNodesByKey(t *testing.T) {
 	nodes := map[string]*node{}
 
-	root := newRootNode()
+	root := newNode()
 	n := root
 
 	var accumulatedKey string
