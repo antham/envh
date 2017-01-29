@@ -380,3 +380,25 @@ func TestGetFloatFromTree(t *testing.T) {
 	assert.EqualError(t, err, `Value "test" can't be converted to type "float"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }
+
+func TestGetChildrenKeys(t *testing.T) {
+	setEnv("KEY1", "test")
+	setEnv("KEY2", "test")
+	setEnv("KEY3", "test")
+
+	envTree, err := NewEnvTree("^KEY[0-9]", " ")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	result := envTree.GetChildrenKeys()
+
+	sort.Strings(result)
+
+	assert.Equal(t, []string{"KEY1", "KEY2", "KEY3"}, result, "Must returns an array of all child keys")
+
+	subTree, err := envTree.FindSubTree("KEY1")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	assert.Empty(t, subTree.GetChildrenKeys(), "Must returns an empty array of keys")
+}

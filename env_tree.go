@@ -103,6 +103,17 @@ func (e EnvTree) FindChildrenKeys(keyChain ...string) ([]string, error) {
 	return keys, nil
 }
 
+// GetChildrenKeys retrieves all current tree children node keys
+func (e EnvTree) GetChildrenKeys() []string {
+	keys := []string{}
+
+	for _, c := range e.root.children {
+		keys = append(keys, c.key)
+	}
+
+	return keys
+}
+
 // GetString returns current tree value as string if value exists
 // or an error as second parameter
 func (e EnvTree) GetString(keyChain ...string) (string, error) {
