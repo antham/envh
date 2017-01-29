@@ -260,12 +260,16 @@ func TestGetStringFromTree(t *testing.T) {
 
 	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "TEST3")
 
+	assert.NoError(t, err, "Must returns no error")
+
 	value, err := subTree.GetString()
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, "test1", value, "Must return value")
 
 	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
 
 	value, err = subTree.GetString("ENVH_TEST1000")
 
