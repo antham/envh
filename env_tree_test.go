@@ -402,3 +402,27 @@ func TestGetChildrenKeys(t *testing.T) {
 
 	assert.Empty(t, subTree.GetChildrenKeys(), "Must returns an empty array of keys")
 }
+
+func TestHasValue(t *testing.T) {
+	setEnv("ENVH_KEY1_KEY2", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	subTree, err := envTree.FindSubTree("ENVH", "KEY1", "KEY2")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	result := subTree.HasValue()
+
+	assert.True(t, result, "Must returns true, sub tree has value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "KEY1")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	result = subTree.HasValue()
+
+	assert.False(t, result, "Must returns false, sub tree has value")
+}

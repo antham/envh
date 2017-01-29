@@ -137,6 +137,13 @@ func (e EnvTree) GetFloat(keyChain ...string) (float32, error) {
 func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
 	return getBool(e.getValue())
 }
+
+// HasValue returns true if current tree has a value defined
+// false otherwise
+func (e EnvTree) HasValue() bool {
+	return e.root.hasValue
+}
+
 func (e EnvTree) getValue() func() (string, bool) {
 	return func() (string, bool) {
 		if e.root.hasValue {
