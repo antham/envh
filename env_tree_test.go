@@ -250,3 +250,133 @@ func TestFindSubTreeFromTree(t *testing.T) {
 
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
+
+func TestGetStringFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_TEST3", "test1")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "TEST3")
+
+	value, err := subTree.GetString()
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, "test1", value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	value, err = subTree.GetString("ENVH_TEST1000")
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, "", value, "Must return empty string")
+}
+
+func TestGetIntFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_INT", "1")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "INT")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err := subTree.GetInt()
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, 1, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err = subTree.GetInt()
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, 0, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err = subTree.GetInt()
+
+	assert.EqualError(t, err, `Value "test" can't be converted to type "int"`, "Must return an error when variable can't be converted")
+	assert.Equal(t, 0, value, "Must return empty string")
+}
+
+func TestGetBoolFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_BOOL", "true")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "BOOL")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err := subTree.GetBool()
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, true, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err = subTree.GetBool()
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, false, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err = subTree.GetBool()
+
+	assert.EqualError(t, err, `Value "test" can't be converted to type "bool"`, "Must return an error when variable can't be converted")
+	assert.Equal(t, false, value, "Must return empty string")
+}
+
+func TestGetFloatFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "FLOAT")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err := subTree.GetFloat()
+
+	assert.NoError(t, err, "Must return no errors")
+	assert.Equal(t, float32(0.01), value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err = subTree.GetFloat()
+
+	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, float32(0), value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value, err = subTree.GetFloat()
+
+	assert.EqualError(t, err, `Value "test" can't be converted to type "float"`, "Must return an error when variable can't be converted")
+	assert.Equal(t, float32(0), value, "Must return empty string")
+}

@@ -103,6 +103,39 @@ func (e EnvTree) FindChildrenKeys(keyChain ...string) ([]string, error) {
 	return keys, nil
 }
 
+// GetString returns current tree value as string if value exists
+// or an error as second parameter
+func (e EnvTree) GetString(keyChain ...string) (string, error) {
+	return getString(e.getValue())
+}
+
+// GetInt returns current tree value as int if value exists
+// or an error if value is not an integer or doesn't exist
+func (e EnvTree) GetInt(keyChain ...string) (int, error) {
+	return getInt(e.getValue())
+}
+
+// GetFloat returns current tree value as float if value exists
+// or an error if value is not a float or doesn't exist
+func (e EnvTree) GetFloat(keyChain ...string) (float32, error) {
+	return getFloat(e.getValue())
+}
+
+// GetBool returns current tree value as boolean if value exists
+// or an error if value is not a boolean or doesn't exist
+func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
+	return getBool(e.getValue())
+}
+func (e EnvTree) getValue() func() (string, bool) {
+	return func() (string, bool) {
+		if e.root.hasValue {
+			return e.root.value, true
+		}
+
+		return "", false
+	}
+}
+
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newRootNode()
 
