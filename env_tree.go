@@ -144,6 +144,11 @@ func (e EnvTree) HasValue() bool {
 	return e.root.hasValue
 }
 
+// GetKey returns current tree key
+func (e EnvTree) GetKey() string {
+	return e.root.key
+}
+
 func (e EnvTree) getValue() func() (string, bool) {
 	return func() (string, bool) {
 		if e.root.hasValue {

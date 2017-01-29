@@ -426,3 +426,23 @@ func TestHasValue(t *testing.T) {
 
 	assert.False(t, result, "Must returns false, sub tree has value")
 }
+
+func TestGetKey(t *testing.T) {
+	setEnv("KEY1", "test")
+
+	envTree, err := NewEnvTree("KEY[0-9]", " ")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	result := envTree.GetKey()
+
+	assert.Equal(t, result, "", "Must returns an empty string, original root node has no value")
+
+	subTree, err := envTree.FindSubTree("KEY1")
+
+	assert.NoError(t, err, "Must returns no errors")
+
+	result = subTree.GetKey()
+
+	assert.Equal(t, result, "KEY1", "Must returns key")
+}
