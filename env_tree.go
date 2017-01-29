@@ -27,41 +27,41 @@ func NewEnvTree(reg string, delimiter string) (EnvTree, error) {
 	return EnvTree{t}, nil
 }
 
-// GetString returns a string if variable exists
+// FindString returns a string if key chain exists
 // or an error otherwise
-func (e EnvTree) GetString(keyChain ...string) (string, error) {
+func (e EnvTree) FindString(keyChain ...string) (string, error) {
 	return getString(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// GetInt returns an integer if variable exists
+// FindInt returns an integer if key chain exists
 // or an error if value is not an integer or doesn't exist
-func (e EnvTree) GetInt(keyChain ...string) (int, error) {
+func (e EnvTree) FindInt(keyChain ...string) (int, error) {
 	return getInt(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// GetFloat returns a float if variable exists
+// FindFloat returns a float if key chain exists
 // or an error if value is not a float or doesn't exist
-func (e EnvTree) GetFloat(keyChain ...string) (float32, error) {
+func (e EnvTree) FindFloat(keyChain ...string) (float32, error) {
 	return getFloat(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// GetBool returns a boolean if variable exists
+// FindBool returns a boolean if key chain exists
 // or an error if value is not a boolean or doesn't exist
-func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
+func (e EnvTree) FindBool(keyChain ...string) (bool, error) {
 	return getBool(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
-// Exists returns true if sub node exits or false if not
-func (e EnvTree) Exists(keyChain ...string) bool {
+// IsExistingSubTree returns true if key chain has a tree associated or false if not
+func (e EnvTree) IsExistingSubTree(keyChain ...string) bool {
 	_, exists := e.root.findNodeByKeyChain(&keyChain)
 
 	return exists
 }
 
-// HasValue returns true if sub node has a value or false if not.
+// HasSubTreeValue returns true if key chain has a value or false if not.
 // If sub node doesn't exist, it returns an error ErrNodeNotFound
 // as second value
-func (e EnvTree) HasValue(keyChain ...string) (bool, error) {
+func (e EnvTree) HasSubTreeValue(keyChain ...string) (bool, error) {
 	n, exists := e.root.findNodeByKeyChain(&keyChain)
 
 	if !exists {
@@ -71,12 +71,12 @@ func (e EnvTree) HasValue(keyChain ...string) (bool, error) {
 	return n.hasValue, nil
 }
 
-// GetSubTree returns underlying tree from key chain,
+// FindSubTree returns underlying tree from key chain,
 // for instance given A -> B -> C -> D tree,
 // "A" "B" "C" key chain will return C sub tree.
 // If no node is found, it returns an error ErrNodeNotFound as
 // second value
-func (e EnvTree) GetSubTree(keyChain ...string) (EnvTree, error) {
+func (e EnvTree) FindSubTree(keyChain ...string) (EnvTree, error) {
 	if n, exists := e.root.findNodeByKeyChain(&keyChain); exists {
 		return EnvTree{n}, nil
 	}
@@ -84,10 +84,10 @@ func (e EnvTree) GetSubTree(keyChain ...string) (EnvTree, error) {
 	return EnvTree{}, NodeNotFoundError{keyChain}
 }
 
-// GetChildrenKeys returns all children keys for a given key chain.
+// FindChildrenKeys returns all children keys for a given key chain.
 // If sub node doesn't exist, it returns an error ErrNodeNotFound
 // as second value
-func (e EnvTree) GetChildrenKeys(keyChain ...string) ([]string, error) {
+func (e EnvTree) FindChildrenKeys(keyChain ...string) ([]string, error) {
 	n, exists := e.root.findNodeByKeyChain(&keyChain)
 
 	if !exists {

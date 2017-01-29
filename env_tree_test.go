@@ -77,25 +77,25 @@ func TestNewEnvTree(t *testing.T) {
 	assert.Equal(t, expected, result, "Must store all environment variables starting with envh in a tree")
 }
 
-func TestGetStringFromTree(t *testing.T) {
+func TestFindStringFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_TEST3", "test1")
 
 	envTree, err := NewEnvTree("ENVH", "_")
 
 	assert.NoError(t, err, "Must returns no error")
 
-	value, err := envTree.GetString("ENVH", "TEST1", "TEST2", "TEST3")
+	value, err := envTree.FindString("ENVH", "TEST1", "TEST2", "TEST3")
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, "test1", value, "Must return value")
 
-	value, err = envTree.GetString("ENVH_TEST1000")
+	value, err = envTree.FindString("ENVH_TEST1000")
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
 	assert.Equal(t, "", value, "Must return empty string")
 }
 
-func TestGetIntFromTree(t *testing.T) {
+func TestFindIntFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_INT", "1")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
 
@@ -103,23 +103,23 @@ func TestGetIntFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must returns no error")
 
-	value, err := envTree.GetInt("ENVH", "TEST1", "TEST2", "INT")
+	value, err := envTree.FindInt("ENVH", "TEST1", "TEST2", "INT")
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, 1, value, "Must return value")
 
-	value, err = envTree.GetInt("TEST100")
+	value, err = envTree.FindInt("TEST100")
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
 	assert.Equal(t, 0, value, "Must return value")
 
-	value, err = envTree.GetInt("ENVH", "TEST1", "TEST2", "STRING")
+	value, err = envTree.FindInt("ENVH", "TEST1", "TEST2", "STRING")
 
 	assert.EqualError(t, err, `Value "test" can't be converted to type "int"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, 0, value, "Must return empty string")
 }
 
-func TestGetBoolFromTree(t *testing.T) {
+func TestFindBoolFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_BOOL", "1")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
 
@@ -127,23 +127,23 @@ func TestGetBoolFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must returns no error")
 
-	value, err := envTree.GetBool("ENVH", "TEST1", "TEST2", "BOOL")
+	value, err := envTree.FindBool("ENVH", "TEST1", "TEST2", "BOOL")
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, true, value, "Must return value")
 
-	value, err = envTree.GetBool("TEST100")
+	value, err = envTree.FindBool("TEST100")
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
 	assert.Equal(t, false, value, "Must return value")
 
-	value, err = envTree.GetBool("ENVH", "TEST1", "TEST2", "STRING")
+	value, err = envTree.FindBool("ENVH", "TEST1", "TEST2", "STRING")
 
 	assert.EqualError(t, err, `Value "test" can't be converted to type "bool"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, false, value, "Must return empty string")
 }
 
-func TestGetFloatFromTree(t *testing.T) {
+func TestFindFloatFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
 
@@ -151,57 +151,57 @@ func TestGetFloatFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must returns no error")
 
-	value, err := envTree.GetFloat("ENVH", "TEST1", "TEST2", "FLOAT")
+	value, err := envTree.FindFloat("ENVH", "TEST1", "TEST2", "FLOAT")
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Equal(t, float32(0.01), value, "Must return value")
 
-	value, err = envTree.GetFloat("TEST100")
+	value, err = envTree.FindFloat("TEST100")
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
 	assert.Equal(t, float32(0), value, "Must return value")
 
-	value, err = envTree.GetFloat("ENVH", "TEST1", "TEST2", "STRING")
+	value, err = envTree.FindFloat("ENVH", "TEST1", "TEST2", "STRING")
 
 	assert.EqualError(t, err, `Value "test" can't be converted to type "float"`, "Must return an error when variable can't be converted")
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }
 
-func TestExistsFromTree(t *testing.T) {
+func TestIsExistingSubTreeFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_TEST3", "test")
 
 	envTree, err := NewEnvTree("ENVH", "_")
 
 	assert.NoError(t, err, "Must returns no error")
 
-	assert.True(t, envTree.Exists("ENVH", "TEST1", "TEST2", "TEST3"), "Must return true if environment node exists")
+	assert.True(t, envTree.IsExistingSubTree("ENVH", "TEST1", "TEST2", "TEST3"), "Must return true if environment node exists")
 
-	assert.False(t, envTree.Exists("ENVH", "TEST1", "TEST2", "TEST10000"), "Must return false if environment node doesn't exist")
+	assert.False(t, envTree.IsExistingSubTree("ENVH", "TEST1", "TEST2", "TEST10000"), "Must return false if environment node doesn't exist")
 }
 
-func TestHasValueFromTree(t *testing.T) {
+func TestHasSubTreeValueFromTree(t *testing.T) {
 	setEnv("ENVH_TEST10_TEST20_TEST30", "test")
 
 	envTree, err := NewEnvTree("ENVH", "_")
 
 	assert.NoError(t, err, "Must returns no error")
 
-	v, err := envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST30")
+	v, err := envTree.HasSubTreeValue("ENVH", "TEST10", "TEST20", "TEST30")
 
 	assert.NoError(t, err, "Must returns no error")
 	assert.True(t, v, "Must return true if environment node has a value")
 
-	v, err = envTree.HasValue("ENVH", "TEST10", "TEST20")
+	v, err = envTree.HasSubTreeValue("ENVH", "TEST10", "TEST20")
 
 	assert.NoError(t, err, "Must returns no error")
 	assert.False(t, v, "Must return false if environment node doesn't have value")
 
-	_, err = envTree.HasValue("ENVH", "TEST10", "TEST20", "TEST10000")
+	_, err = envTree.HasSubTreeValue("ENVH", "TEST10", "TEST20", "TEST10000")
 
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST10 -> TEST20 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
 
-func TestGetChildrenKeysFromTree(t *testing.T) {
+func TestFindChildrenKeysFromTree(t *testing.T) {
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST16", "test3")
@@ -210,24 +210,24 @@ func TestGetChildrenKeysFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must returns no error")
 
-	v, err := envTree.GetChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13")
+	v, err := envTree.FindChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13")
 
 	sort.Strings(v)
 
 	assert.NoError(t, err, "Must returns no error")
 	assert.Equal(t, []string{"TEST14", "TEST15", "TEST16"}, v, "Must return all node children keys")
 
-	v, err = envTree.GetChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13", "TEST14")
+	v, err = envTree.FindChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13", "TEST14")
 
 	assert.NoError(t, err, "Must returns no error")
 	assert.Empty(t, v, "Must return no node children keys")
 
-	_, err = envTree.GetChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
+	_, err = envTree.FindChildrenKeys("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
 
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
 
-func TestGetSubTreeFromTree(t *testing.T) {
+func TestFindSubTreeFromTree(t *testing.T) {
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST16", "test3")
@@ -236,17 +236,17 @@ func TestGetSubTreeFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must returns no error")
 
-	tree, err := envTree.GetSubTree("ENVH", "TEST11", "TEST12", "TEST13")
+	tree, err := envTree.FindSubTree("ENVH", "TEST11", "TEST12", "TEST13")
 
 	assert.NoError(t, err, "Must returns no error")
 
-	v, err := tree.GetString("TEST14")
+	v, err := tree.FindString("TEST14")
 
 	assert.NoError(t, err, "Must returns no error")
 
 	assert.Equal(t, "test1", v, "Must return value corresponding to key TEST14")
 
-	_, err = envTree.GetSubTree("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
+	_, err = envTree.FindSubTree("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
 
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
