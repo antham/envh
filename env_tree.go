@@ -116,25 +116,25 @@ func (e EnvTree) GetChildrenKeys() []string {
 
 // GetString returns current tree value as string if value exists
 // or an error as second parameter
-func (e EnvTree) GetString(keyChain ...string) (string, error) {
+func (e EnvTree) GetString() (string, error) {
 	return getString(e.getValue())
 }
 
 // GetInt returns current tree value as int if value exists
 // or an error if value is not an integer or doesn't exist
-func (e EnvTree) GetInt(keyChain ...string) (int, error) {
+func (e EnvTree) GetInt() (int, error) {
 	return getInt(e.getValue())
 }
 
 // GetFloat returns current tree value as float if value exists
 // or an error if value is not a float or doesn't exist
-func (e EnvTree) GetFloat(keyChain ...string) (float32, error) {
+func (e EnvTree) GetFloat() (float32, error) {
 	return getFloat(e.getValue())
 }
 
 // GetBool returns current tree value as boolean if value exists
 // or an error if value is not a boolean or doesn't exist
-func (e EnvTree) GetBool(keyChain ...string) (bool, error) {
+func (e EnvTree) GetBool() (bool, error) {
 	return getBool(e.getValue())
 }
 

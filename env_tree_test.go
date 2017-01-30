@@ -271,7 +271,7 @@ func TestGetStringFromTree(t *testing.T) {
 
 	assert.NoError(t, err, "Must return no errors")
 
-	value, err = subTree.GetString("ENVH_TEST1000")
+	value, err = subTree.GetString()
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
 	assert.Equal(t, "", value, "Must return empty string")
