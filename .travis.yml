@@ -10,7 +10,7 @@ before_install:
   - go get github.com/alecthomas/gometalinter
   - gometalinter --install --update
 
-install: glide install
+install: go get -v -u -t
 
 script: make test-all
 
