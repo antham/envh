@@ -13,4 +13,4 @@ This library is made up of two parts :
 
 ## How it works
 
-Check the godoc, there are many examples provided.
+Check [the godoc](http://godoc.org/github.com/antham/envh), there are many examples provided.
