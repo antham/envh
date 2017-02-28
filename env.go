@@ -1,3 +1,4 @@
+// Package envh provides convenient helpers to manage easily your environment variables.
 package envh
 
 import (
