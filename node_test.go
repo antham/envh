@@ -115,10 +115,10 @@ func TestFindNodeByKeyChain(t *testing.T) {
 	assert.Equal(t, "test3", node.value, "Must return correct node")
 
 	for _, keyChain := range [][]string{
-		[]string{},
-		[]string{"ENV"},
-		[]string{"ENVH", "TEST1", "TEST7", "TEST8"},
-		[]string{"ENVH", "TEST1", "TEST6", "TEST8"},
+		{},
+		{"ENV"},
+		{"ENVH", "TEST1", "TEST7", "TEST8"},
+		{"ENVH", "TEST1", "TEST6", "TEST8"},
 	} {
 		_, exists := n.findNodeByKeyChain(&keyChain)
 
