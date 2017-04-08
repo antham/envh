@@ -5,13 +5,6 @@ gometalinter:
 	gometalinter -D gotype --vendor --deadline=240s --dupl-threshold=200 -e '_string' -j 5 ./...
 
 run-tests:
-	./test.sh
-
-run-tests-quickly:
-	go test -v $(shell glide nv)
+	go test -v -race -coverprofile=profile.out -covermode=atomic
 
 test-all: gometalinter run-tests
-
-test-package:
-	go test -race -cover -coverprofile=/tmp/gommit github.com/antham/gommit/$(pkg)
-	go tool cover -html=/tmp/gommit
