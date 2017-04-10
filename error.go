@@ -44,3 +44,14 @@ type VariableDuplicatedError struct {
 func (e VariableDuplicatedError) Error() string {
 	return fmt.Sprintf(`Variable "%s" was already defined before`, e.Variable)
 }
+
+// TypeUnsupported is triggered when a type isn't supported
+type TypeUnsupported struct {
+	ActualType   string
+	RequiredType string
+}
+
+// Error dump error
+func (e TypeUnsupported) Error() string {
+	return fmt.Sprintf(`Type "%s" is not supported : you must provide "%s"`, e.ActualType, e.RequiredType)
+}
