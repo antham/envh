@@ -38,11 +38,3 @@ func setTestingEnvsForTree() {
 		}
 	}
 }
-
-func setEnv(key string, value string) {
-	err := os.Setenv(key, value)
-
-	if err != nil {
-		logrus.Fatal(err)
-	}
-}
