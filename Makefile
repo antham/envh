@@ -5,6 +5,6 @@ gometalinter:
 	gometalinter -D gotype --vendor --deadline=240s --dupl-threshold=200 -e '_string' -j 5 ./...
 
 run-tests:
-	go test -v -race -coverprofile=profile.out -covermode=atomic
+	go test -v -race -coverprofile=coverage.txt -covermode=atomic
 
 test-all: gometalinter run-tests
