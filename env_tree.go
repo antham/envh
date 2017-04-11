@@ -149,6 +149,13 @@ func (e EnvTree) GetKey() string {
 	return e.root.key
 }
 
+// PopulateStruct fills a structure with datas extracted.
+// If strict is false, missing values are ignored and only type
+// errors are reported, if strict is true, a missing environment variable returns an error
+func (e EnvTree) PopulateStruct(structure interface{}, strict bool) error {
+	return populateStructFromEnvTree(structure, &e, strict)
+}
+
 func (e EnvTree) getValue() func() (string, bool) {
 	return func() (string, bool) {
 		if e.root.hasValue {

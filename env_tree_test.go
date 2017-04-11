@@ -450,3 +450,24 @@ func TestGetKey(t *testing.T) {
 
 	assert.Equal(t, result, "KEY1", "Must returns key")
 }
+
+func TestPopulateStruct(t *testing.T) {
+	setEnv("TEST_WHATEVER", "string")
+
+	type TEST struct {
+		WHATEVER string
+	}
+
+	envTree, err := NewEnvTree("TEST", "_")
+
+	assert.NoError(t, err)
+
+	actual := TEST{}
+
+	err = envTree.PopulateStruct(&actual, false)
+
+	assert.NoError(t, err)
+	assert.Equal(t, TEST{"string"}, actual)
+
+	restoreEnvs()
+}
