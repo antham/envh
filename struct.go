@@ -70,7 +70,7 @@ func populateBool(forceDefinition bool, tree *EnvTree, val reflect.Value, keyCha
 	return nil
 }
 
-func populateEntry(entries *[]entry, tree *EnvTree, forceDefinition bool) error {
+func populateStruct(entries *[]entry, tree *EnvTree, forceDefinition bool) error {
 	var err error
 
 	typ := (*entries)[0].typ
@@ -117,7 +117,7 @@ func populateStructFromEnvTree(data interface{}, tree *EnvTree, forceDefinition 
 	entries := []entry{{reflect.TypeOf(data).Elem(), reflect.ValueOf(data).Elem(), []string{reflect.TypeOf(data).Elem().Name()}}}
 
 	for {
-		err := populateEntry(&entries, tree, forceDefinition)
+		err := populateStruct(&entries, tree, forceDefinition)
 
 		if err != nil {
 			return err
