@@ -35,16 +35,6 @@ func (e WrongTypeError) Error() string {
 	return fmt.Sprintf(`Value "%s" can't be converted to type "%s"`, e.Value, e.Type)
 }
 
-// VariableDuplicatedError is triggered when environment variable cannot be found
-type VariableDuplicatedError struct {
-	Variable string
-}
-
-// Error dump error
-func (e VariableDuplicatedError) Error() string {
-	return fmt.Sprintf(`Variable "%s" was already defined before`, e.Variable)
-}
-
 // TypeUnsupported is triggered when a type isn't supported
 type TypeUnsupported struct {
 	ActualType   string
