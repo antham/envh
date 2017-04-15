@@ -464,10 +464,30 @@ func TestPopulateStruct(t *testing.T) {
 
 	actual := TEST{}
 
-	err = envTree.PopulateStruct(&actual, false)
+	err = envTree.PopulateStruct(&actual)
 
 	assert.NoError(t, err)
 	assert.Equal(t, TEST{"string"}, actual)
+
+	restoreEnvs()
+}
+
+func TestPopulateStructWithStrictModeWithAnError(t *testing.T) {
+	setEnv("TEST_STRING", "string")
+
+	type TEST struct {
+		WHATEVER string
+	}
+
+	envTree, err := NewEnvTree("TEST", "_")
+
+	assert.NoError(t, err)
+
+	actual := TEST{}
+
+	err = envTree.PopulateStructWithStrictMode(&actual)
+
+	assert.EqualError(t, err, "Variable not found")
 
 	restoreEnvs()
 }
