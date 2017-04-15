@@ -150,10 +150,15 @@ func (e EnvTree) GetKey() string {
 }
 
 // PopulateStruct fills a structure with datas extracted.
-// If strict is false, missing values are ignored and only type
-// errors are reported, if strict is true, a missing environment variable returns an error
-func (e EnvTree) PopulateStruct(structure interface{}, strict bool) error {
-	return populateStructFromEnvTree(structure, &e, strict)
+// Missing values are ignored and only type errors are reported
+func (e EnvTree) PopulateStruct(structure interface{}) error {
+	return populateStructFromEnvTree(structure, &e, false)
+}
+
+// PopulateStructWithStrictMode fills a structure with datas extracted.
+// A missing environment variable returns an error and type errors are reported
+func (e EnvTree) PopulateStructWithStrictMode(structure interface{}) error {
+	return populateStructFromEnvTree(structure, &e, true)
 }
 
 func (e EnvTree) getValue() func() (string, bool) {

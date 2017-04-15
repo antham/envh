@@ -472,7 +472,7 @@ func ExampleEnvTree_PopulateStruct() {
 
 	s := ENVH{}
 
-	err = env.PopulateStruct(&s, false)
+	err = env.PopulateStruct(&s)
 
 	if err != nil {
 		return
@@ -487,4 +487,44 @@ func ExampleEnvTree_PopulateStruct() {
 	fmt.Println(string(b))
 	// Output:
 	// {"DB":{"USERNAME":"foo","PASSWORD":"bar","PORT":3306,"USAGELIMIT":95.6},"MAILER":{"HOST":"127.0.0.1","USERNAME":"foo","PASSWORD":"bar","ENABLED":true}}
+}
+
+func ExampleEnvTree_PopulateStructWithStrictMode() {
+	type ENVH struct {
+		DB struct {
+			USERNAME   string
+			PASSWORD   string
+			PORT       int
+			USAGELIMIT float32
+		}
+		MAILER struct {
+			HOST     string
+			USERNAME string
+			PASSWORD string
+			ENABLED  bool
+		}
+	}
+
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGELIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	s := ENVH{}
+
+	err = env.PopulateStructWithStrictMode(&s)
+
+	fmt.Println(err)
+	// Output:
+	// Variable not found
 }
