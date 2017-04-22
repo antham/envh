@@ -150,13 +150,19 @@ func (e EnvTree) GetKey() string {
 }
 
 // PopulateStruct fills a structure with datas extracted.
-// Missing values are ignored and only type errors are reported
+// Missing values are ignored and only type errors are reported.
+// It's possible to control the way struct fields are defined
+// implementing StructWalker interface on structure,
+// checkout StructWalker documentation for further examples.
 func (e EnvTree) PopulateStruct(structure interface{}) error {
 	return populateStructFromEnvTree(structure, &e, false)
 }
 
 // PopulateStructWithStrictMode fills a structure with datas extracted.
-// A missing environment variable returns an error and type errors are reported
+// A missing environment variable returns an error and type errors are reported.
+// It's possible to control the way struct fields are defined
+// implementing StructWalker interface on structure,
+// checkout StructWalker documentation for further examples.
 func (e EnvTree) PopulateStructWithStrictMode(structure interface{}) error {
 	return populateStructFromEnvTree(structure, &e, true)
 }

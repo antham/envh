@@ -1,6 +1,9 @@
 package envh
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -235,4 +238,108 @@ func TestPopulateStructWithStrictCheckEnabled(t *testing.T) {
 		s.checkError(err)
 		restoreEnvs()
 	}
+}
+
+type SUM struct {
+	LEFTOPERAND  int
+	RIGHTOPERAND int
+	RESULT       int
+}
+
+func (s *SUM) Walk(tree *EnvTree, keyChain []string) (bool, error) {
+	if iterator, ok := map[string]func(*EnvTree, []string) (bool, error){
+		"SUM_LEFTOPERAND": s.validateLeftOperand,
+		"SUM_RESULT":      s.setResult,
+	}[strings.Join(keyChain, "_")]; ok {
+		return iterator(tree, keyChain)
+	}
+
+	return false, nil
+
+}
+
+func (s *SUM) setResult(tree *EnvTree, keyChain []string) (bool, error) {
+	left, err := tree.FindInt("SUM", "LEFTOPERAND")
+
+	if err != nil {
+		return true, fmt.Errorf(`Can't find "SUM_LEFTOPERAND"`)
+	}
+
+	right, err := tree.FindInt("SUM", "RIGHTOPERAND")
+
+	if err != nil {
+		return true, fmt.Errorf(`Can't find "RIGHT_LEFTOPERAND"`)
+	}
+
+	s.RESULT = left + right
+
+	return true, nil
+}
+
+func (s *SUM) validateLeftOperand(tree *EnvTree, keyChain []string) (bool, error) {
+	val, err := tree.FindInt(keyChain...)
+
+	if err != nil {
+		return false, fmt.Errorf(`"SUM_LEFTOPERAND" can't be found`)
+	}
+
+	if val <= 0 {
+		return false, fmt.Errorf(`"LEFTOPERAND" must be greater than 0`)
+	}
+
+	return false, nil
+}
+
+func TestPopulateStructWithCustomSet(t *testing.T) {
+	setEnv("SUM_LEFTOPERAND", "1")
+	setEnv("SUM_RIGHTOPERAND", "2")
+
+	actual := SUM{}
+
+	tree, err := NewEnvTree("SUM", "_")
+
+	assert.NoError(t, err)
+
+	err = populateStructFromEnvTree(&actual, &tree, false)
+
+	assert.NoError(t, err)
+
+	expected := SUM{LEFTOPERAND: 1, RIGHTOPERAND: 2, RESULT: 3}
+
+	assert.Equal(t, expected, actual, "Must set result field")
+
+	restoreEnvs()
+}
+
+func TestPopulateStructWithCustomSetTriggeringAnError(t *testing.T) {
+	setEnv("SUM_LEFTOPERAND", "2")
+
+	actual := SUM{}
+
+	tree, err := NewEnvTree("SUM", "_")
+
+	assert.NoError(t, err)
+
+	err = populateStructFromEnvTree(&actual, &tree, false)
+
+	assert.EqualError(t, err, `Can't find "RIGHT_LEFTOPERAND"`, "Must bubble up an error from Populate function")
+
+	restoreEnvs()
+}
+
+func TestPopulateStructWithCustomValidationTriggeringAnError(t *testing.T) {
+	setEnv("SUM_LEFTOPERAND", "0")
+	setEnv("SUM_RIGHTOPERAND", "2")
+
+	actual := SUM{}
+
+	tree, err := NewEnvTree("SUM", "_")
+
+	assert.NoError(t, err)
+
+	err = populateStructFromEnvTree(&actual, &tree, false)
+
+	assert.EqualError(t, err, `"LEFTOPERAND" must be greater than 0`, "Must validate data")
+
+	restoreEnvs()
 }
