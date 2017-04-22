@@ -81,18 +81,19 @@ func populateStruct(entries *[]entry, tree *EnvTree, forceDefinition bool) error
 
 	for i := 0; i < typ.NumField(); i++ {
 		val := value.Field(i)
+		valKeyChain := append(chain, typ.Field(i).Name)
 
 		switch val.Type().Kind() {
 		case reflect.Struct:
-			*entries = append(*entries, entry{val.Type(), val, append(chain, typ.Field(i).Name)})
+			*entries = append(*entries, entry{val.Type(), val, valKeyChain})
 		case reflect.Int:
-			err = populateInt(forceDefinition, tree, val, append(chain, typ.Field(i).Name))
+			err = populateInt(forceDefinition, tree, val, valKeyChain)
 		case reflect.Float32:
-			err = populateFloat(forceDefinition, tree, val, append(chain, typ.Field(i).Name))
+			err = populateFloat(forceDefinition, tree, val, valKeyChain)
 		case reflect.String:
-			err = populateString(forceDefinition, tree, val, append(chain, typ.Field(i).Name))
+			err = populateString(forceDefinition, tree, val, valKeyChain)
 		case reflect.Bool:
-			err = populateBool(forceDefinition, tree, val, append(chain, typ.Field(i).Name))
+			err = populateBool(forceDefinition, tree, val, valKeyChain)
 		default:
 			err = TypeUnsupported{val.Type().Kind().String(), "int32, float32, string, boolean or struct"}
 		}
