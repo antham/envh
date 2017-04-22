@@ -4,6 +4,18 @@ import (
 	"reflect"
 )
 
+// StructWalker must be implemented, when using PopulateStruct* functions,
+// to be able to set a value for a custom field with an unsupported field (a map for instance),
+// to add transformation before setting a field or for custom validation purpose.
+// Walk function is called when struct is populated for every struct field a matching is made with
+// an EnvTree node. Two parameters are given : tree represents whole parsed tree and keyChain is path leading to the node in tree.
+// Returning true as first parameter will bypass walking process and false not, so it's
+// possible to completely control how some part of a structure are defined and it's possible as well
+// only to add some checking and let regular process do its job.
+type StructWalker interface {
+	Walk(tree *EnvTree, keyChain []string) (bypassWalkingProcess bool, err error)
+}
+
 type entry struct {
 	typ   reflect.Type
 	value reflect.Value
@@ -70,8 +82,38 @@ func populateBool(forceDefinition bool, tree *EnvTree, val reflect.Value, keyCha
 	return nil
 }
 
-func populateStruct(entries *[]entry, tree *EnvTree, forceDefinition bool) error {
+func populateRegularType(entries *[]entry, tree *EnvTree, val reflect.Value, valKeyChain []string, forceDefinition bool) error {
+	switch val.Type().Kind() {
+	case reflect.Struct:
+		*entries = append(*entries, entry{val.Type(), val, valKeyChain})
+
+		return nil
+	case reflect.Int:
+		return populateInt(forceDefinition, tree, val, valKeyChain)
+	case reflect.Float32:
+		return populateFloat(forceDefinition, tree, val, valKeyChain)
+	case reflect.String:
+		return populateString(forceDefinition, tree, val, valKeyChain)
+	case reflect.Bool:
+		return populateBool(forceDefinition, tree, val, valKeyChain)
+	default:
+		return TypeUnsupported{val.Type().Kind().String(), "int32, float32, string, boolean or struct"}
+	}
+}
+
+func callStructMethodWalk(origStruct interface{}, tree *EnvTree, keyChain []string) (bool, error) {
+	if walker, ok := origStruct.(StructWalker); ok {
+		return walker.Walk(tree, keyChain)
+	}
+
+	return false, nil
+}
+
+func populateStruct(entries *[]entry, origStruct interface{}, tree *EnvTree, forceDefinition bool) error {
 	var err error
+	var ok bool
+	var val reflect.Value
+	var valKeyChain []string
 
 	typ := (*entries)[0].typ
 	value := (*entries)[0].value
@@ -80,25 +122,20 @@ func populateStruct(entries *[]entry, tree *EnvTree, forceDefinition bool) error
 	(*entries) = append([]entry{}, (*entries)[1:]...)
 
 	for i := 0; i < typ.NumField(); i++ {
-		val := value.Field(i)
-		valKeyChain := append(chain, typ.Field(i).Name)
+		val = value.Field(i)
+		valKeyChain = append(chain, typ.Field(i).Name)
 
-		switch val.Type().Kind() {
-		case reflect.Struct:
-			*entries = append(*entries, entry{val.Type(), val, valKeyChain})
-		case reflect.Int:
-			err = populateInt(forceDefinition, tree, val, valKeyChain)
-		case reflect.Float32:
-			err = populateFloat(forceDefinition, tree, val, valKeyChain)
-		case reflect.String:
-			err = populateString(forceDefinition, tree, val, valKeyChain)
-		case reflect.Bool:
-			err = populateBool(forceDefinition, tree, val, valKeyChain)
-		default:
-			err = TypeUnsupported{val.Type().Kind().String(), "int32, float32, string, boolean or struct"}
-		}
+		ok, err = callStructMethodWalk(origStruct, tree, valKeyChain)
 
 		if err != nil {
+			return err
+		}
+
+		if ok {
+			continue
+		}
+
+		if err = populateRegularType(entries, tree, val, valKeyChain, forceDefinition); err != nil {
 			return err
 		}
 	}
@@ -110,15 +147,15 @@ func isPointerToStruct(data interface{}) bool {
 	return !(reflect.TypeOf(data).Kind() != reflect.Ptr || reflect.TypeOf(data).Elem().Kind() != reflect.Struct)
 }
 
-func populateStructFromEnvTree(data interface{}, tree *EnvTree, forceDefinition bool) error {
-	if !isPointerToStruct(data) {
-		return TypeUnsupported{reflect.TypeOf(data).Kind().String(), "pointer to struct"}
+func populateStructFromEnvTree(origStruct interface{}, tree *EnvTree, forceDefinition bool) error {
+	if !isPointerToStruct(origStruct) {
+		return TypeUnsupported{reflect.TypeOf(origStruct).Kind().String(), "pointer to struct"}
 	}
 
-	entries := []entry{{reflect.TypeOf(data).Elem(), reflect.ValueOf(data).Elem(), []string{reflect.TypeOf(data).Elem().Name()}}}
+	entries := []entry{{reflect.TypeOf(origStruct).Elem(), reflect.ValueOf(origStruct).Elem(), []string{reflect.TypeOf(origStruct).Elem().Name()}}}
 
 	for {
-		err := populateStruct(&entries, tree, forceDefinition)
+		err := populateStruct(&entries, origStruct, tree, forceDefinition)
 
 		if err != nil {
 			return err
