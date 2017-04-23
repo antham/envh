@@ -4,8 +4,7 @@ Envh [![Build Status](https://travis-ci.org/antham/envh.svg?branch=master)](http
 This library is made up of two parts :
 
 * Env object : it wraps your environments variables in an object and provides convenient helpers.
-* Env tree object : through this helper you can parse and manage your environment variables in a tree like you would do to manage a configuration in a yaml file.
-
+* Env tree object : it manages environment variables through a tree structure to store a config the same way as in a yaml file or whatever format allows to store a config hierarchically
 
 ## Install
 
