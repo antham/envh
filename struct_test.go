@@ -268,7 +268,7 @@ func (s *SUM) setResult(tree *EnvTree, keyChain []string) (bool, error) {
 	right, err := tree.FindInt("SUM", "RIGHTOPERAND")
 
 	if err != nil {
-		return true, fmt.Errorf(`Can't find "RIGHT_LEFTOPERAND"`)
+		return true, fmt.Errorf(`Can't find "SUM_LEFTOPERAND"`)
 	}
 
 	s.RESULT = left + right
@@ -322,7 +322,7 @@ func TestPopulateStructWithCustomSetTriggeringAnError(t *testing.T) {
 
 	err = populateStructFromEnvTree(&actual, &tree, false)
 
-	assert.EqualError(t, err, `Can't find "RIGHT_LEFTOPERAND"`, "Must bubble up an error from Populate function")
+	assert.EqualError(t, err, `Can't find "SUM_LEFTOPERAND"`, "Must bubble up an error from Populate function")
 
 	restoreEnvs()
 }
