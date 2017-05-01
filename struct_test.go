@@ -343,3 +343,62 @@ func TestPopulateStructWithCustomValidationTriggeringAnError(t *testing.T) {
 
 	restoreEnvs()
 }
+
+type FIXREFERENCEMESSUP struct {
+	TEST1 struct {
+		TEST2 struct {
+			TEST3 struct {
+				TEST4 string
+				TEST5 string
+				TEST6 string
+			}
+			TEST7 map[string]string
+		}
+		TEST8 map[string]map[string]string
+	}
+}
+
+func (s *FIXREFERENCEMESSUP) Walk(tree *EnvTree, keyChain []string) (bool, error) {
+	if iterator, ok := map[string]func(*EnvTree, []string) (bool, error){
+		"FIXREFERENCEMESSUP_TEST1_TEST2_TEST7": s.fillMap,
+		"FIXREFERENCEMESSUP_TEST1_TEST8":       func(*EnvTree, []string) (bool, error) { return true, nil },
+	}[strings.Join(keyChain, "_")]; ok {
+		return iterator(tree, keyChain)
+	}
+
+	return false, nil
+}
+
+func (s *FIXREFERENCEMESSUP) fillMap(tree *EnvTree, keyChain []string) (bool, error) {
+	s.TEST1.TEST2.TEST7 = map[string]string{}
+	s.TEST1.TEST2.TEST7["hello"] = "world!"
+	return true, nil
+}
+
+func TestFixReferenceMessUp(t *testing.T) {
+
+	actual := FIXREFERENCEMESSUP{}
+
+	setEnv("FIXREFERENCEMESSUP_TEST1_TEST2_TEST3_TEST4", "4")
+	setEnv("FIXREFERENCEMESSUP_TEST1_TEST2_TEST3_TEST5", "5")
+	setEnv("FIXREFERENCEMESSUP_TEST1_TEST2_TEST3_TEST6", "6")
+	setEnv("FIXREFERENCEMESSUP_TEST1_TEST2_TEST7_HELLO", "world!")
+	setEnv("FIXREFERENCEMESSUP_TEST1_TEST8_TEST", "test")
+
+	tree, err := NewEnvTree("FIXREFERENCEMESSUP", "_")
+
+	assert.NoError(t, err)
+
+	err = populateStructFromEnvTree(&actual, &tree, false)
+
+	assert.NoError(t, err)
+
+	expected := FIXREFERENCEMESSUP{}
+	expected.TEST1.TEST2.TEST3.TEST4 = "4"
+	expected.TEST1.TEST2.TEST3.TEST5 = "5"
+	expected.TEST1.TEST2.TEST3.TEST6 = "6"
+	expected.TEST1.TEST2.TEST7 = map[string]string{}
+	expected.TEST1.TEST2.TEST7["hello"] = "world!"
+
+	assert.Equal(t, expected, actual)
+}
