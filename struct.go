@@ -123,7 +123,7 @@ func populateStruct(entries *[]entry, origStruct interface{}, tree *EnvTree, for
 
 	for i := 0; i < typ.NumField(); i++ {
 		val = value.Field(i)
-		valKeyChain = append(chain, typ.Field(i).Name)
+		valKeyChain = append([]string{}, append(chain, typ.Field(i).Name)...)
 
 		ok, err = callStructMethodWalk(origStruct, tree, valKeyChain)
 
