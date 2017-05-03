@@ -319,28 +319,30 @@ func getRootValue(tree EnvTree) func() (string, bool) {
 	}
 }
 
+func createBranch(key string, value string, delimiter string, current *node) {
+	for _, component := range strings.Split(key, delimiter) {
+		n, exists := current.findNodeByKey(component)
+
+		if exists {
+			current = n
+		} else {
+			child := newNode()
+			child.key = component
+			current.appendNode(child)
+			current = child
+		}
+	}
+
+	current.hasValue = true
+	current.value = value
+}
+
 func createTreeFromDelimiterFilteringByRegexp(reg *regexp.Regexp, delimiter string) *node {
 	rootNode := newNode()
 
 	for key, value := range *parseVars() {
 		if reg.MatchString(key) {
-			current := rootNode
-
-			for _, component := range strings.Split(key, delimiter) {
-				n, exists := current.findNodeByKey(component)
-
-				if exists {
-					current = n
-				} else {
-					child := newNode()
-					child.key = component
-					current.appendNode(child)
-					current = child
-				}
-			}
-
-			current.hasValue = true
-			current.value = value
+			createBranch(key, value, delimiter, rootNode)
 		}
 	}
 
