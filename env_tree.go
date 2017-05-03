@@ -211,7 +211,7 @@ func (e EnvTree) GetChildrenKeys() []string {
 // GetString returns current tree value as string if value exists
 // or an error as second parameter
 func (e EnvTree) GetString() (string, error) {
-	return getString(e.getValue())
+	return getString(getRootValue(e))
 }
 
 // GetStringUnsecured is insecured version of GetString to avoid the burden
@@ -219,7 +219,7 @@ func (e EnvTree) GetString() (string, error) {
 // the variable is missing, it returns default zero string value.
 // This function has to be used carefully
 func (e EnvTree) GetStringUnsecured() string {
-	if val, err := getString(e.getValue()); err == nil {
+	if val, err := getString(getRootValue(e)); err == nil {
 		return val
 	}
 
@@ -229,7 +229,7 @@ func (e EnvTree) GetStringUnsecured() string {
 // GetInt returns current tree value as int if value exists
 // or an error if value is not an integer or doesn't exist
 func (e EnvTree) GetInt() (int, error) {
-	return getInt(e.getValue())
+	return getInt(getRootValue(e))
 }
 
 // GetIntUnsecured is insecured version of GetInt to avoid the burden
@@ -237,7 +237,7 @@ func (e EnvTree) GetInt() (int, error) {
 // the variable is missing or not an int value, it returns default zero int value.
 // This function has to be used carefully
 func (e EnvTree) GetIntUnsecured() int {
-	if val, err := getInt(e.getValue()); err == nil {
+	if val, err := getInt(getRootValue(e)); err == nil {
 		return val
 	}
 
@@ -247,7 +247,7 @@ func (e EnvTree) GetIntUnsecured() int {
 // GetFloat returns current tree value as float if value exists
 // or an error if value is not a float or doesn't exist
 func (e EnvTree) GetFloat() (float32, error) {
-	return getFloat(e.getValue())
+	return getFloat(getRootValue(e))
 }
 
 // GetFloatUnsecured is insecured version of GetFloat to avoid the burden
@@ -255,7 +255,7 @@ func (e EnvTree) GetFloat() (float32, error) {
 // the variable is missing or not a floating value, it returns default zero floating value.
 // This function has to be used carefully
 func (e EnvTree) GetFloatUnsecured() float32 {
-	if val, err := getFloat(e.getValue()); err == nil {
+	if val, err := getFloat(getRootValue(e)); err == nil {
 		return val
 	}
 
@@ -265,7 +265,7 @@ func (e EnvTree) GetFloatUnsecured() float32 {
 // GetBool returns current tree value as boolean if value exists
 // or an error if value is not a boolean or doesn't exist
 func (e EnvTree) GetBool() (bool, error) {
-	return getBool(e.getValue())
+	return getBool(getRootValue(e))
 }
 
 // GetBoolUnsecured is insecured version of GetBool to avoid the burden
@@ -273,7 +273,7 @@ func (e EnvTree) GetBool() (bool, error) {
 // the variable is missing or not a boolean value, it returns default zero boolean value.
 // This function has to be used carefully
 func (e EnvTree) GetBoolUnsecured() bool {
-	if val, err := getBool(e.getValue()); err == nil {
+	if val, err := getBool(getRootValue(e)); err == nil {
 		return val
 	}
 
@@ -309,10 +309,10 @@ func (e EnvTree) PopulateStructWithStrictMode(structure interface{}) error {
 	return populateStructFromEnvTree(structure, &e, true)
 }
 
-func (e EnvTree) getValue() func() (string, bool) {
+func getRootValue(tree EnvTree) func() (string, bool) {
 	return func() (string, bool) {
-		if e.root.hasValue {
-			return e.root.value, true
+		if tree.root.hasValue {
+			return tree.root.value, true
 		}
 
 		return "", false
