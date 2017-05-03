@@ -50,7 +50,7 @@ func (e Env) GetString(key string) (string, error) {
 }
 
 // GetStringUnsecured is insecured version of GetString to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing, it returns default zero string value.
 // This function has to be used carefully
 func (e Env) GetStringUnsecured(key string) string {
@@ -76,7 +76,7 @@ func (e Env) GetInt(key string) (int, error) {
 }
 
 // GetIntUnsecured is insecured version of GetInt to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not an int value, it returns default zero int value.
 // This function has to be used carefully
 func (e Env) GetIntUnsecured(key string) int {
@@ -102,7 +102,7 @@ func (e Env) GetFloat(key string) (float32, error) {
 }
 
 // GetFloatUnsecured is insecured version of GetFloat to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a floating value, it returns default zero floating value.
 // This function has to be used carefully
 func (e Env) GetFloatUnsecured(key string) float32 {
@@ -128,7 +128,7 @@ func (e Env) GetBool(key string) (bool, error) {
 }
 
 // GetBoolUnsecured is insecured version of GetBool to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a boolean value, it returns default zero boolean value.
 // This function has to be used carefully
 func (e Env) GetBoolUnsecured(key string) bool {
@@ -164,7 +164,7 @@ func (e Env) FindEntries(reg string) (map[string]string, error) {
 }
 
 // FindEntriesUnsecured is insecured version of FindEntriesUnsecured to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a boolean value, it returns default empty map.
 // This function has to be used carefully.
 func (e Env) FindEntriesUnsecured(reg string) map[string]string {

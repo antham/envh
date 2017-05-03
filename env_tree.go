@@ -34,7 +34,7 @@ func (e EnvTree) FindString(keyChain ...string) (string, error) {
 }
 
 // FindStringUnsecured is insecured version of FindString to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing, it returns default zero string value.
 // This function has to be used carefully
 func (e EnvTree) FindStringUnsecured(keyChain ...string) string {
@@ -52,7 +52,7 @@ func (e EnvTree) FindInt(keyChain ...string) (int, error) {
 }
 
 // FindIntUnsecured is insecured version of FindInt to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not an int value, it returns default zero int value.
 // This function has to be used carefully
 func (e EnvTree) FindIntUnsecured(keyChain ...string) int {
@@ -70,7 +70,7 @@ func (e EnvTree) FindFloat(keyChain ...string) (float32, error) {
 }
 
 // FindFloatUnsecured is insecured version of FindFloat to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a floating value, it returns default zero floating value.
 // This function has to be used carefully
 func (e EnvTree) FindFloatUnsecured(keyChain ...string) float32 {
@@ -88,7 +88,7 @@ func (e EnvTree) FindBool(keyChain ...string) (bool, error) {
 }
 
 // FindBoolUnsecured is insecured version of FindBool to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a boolean value, it returns default zero boolean value.
 // This function has to be used carefully
 func (e EnvTree) FindBoolUnsecured(keyChain ...string) bool {
@@ -120,7 +120,7 @@ func (e EnvTree) HasSubTreeValue(keyChain ...string) (bool, error) {
 }
 
 // HasSubTreeValueUnsecured is insecured version of HasSubTreeValue to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the node doesn't exist, it returns false.
 // This function has to be used carefully
 func (e EnvTree) HasSubTreeValueUnsecured(keyChain ...string) bool {
@@ -147,7 +147,7 @@ func (e EnvTree) FindSubTree(keyChain ...string) (EnvTree, error) {
 }
 
 // FindSubTreeUnsecured is insecured version of FindSubTree to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the node doesn't exist, it returns empty EnvTree.
 // This function has to be used carefully
 func (e EnvTree) FindSubTreeUnsecured(keyChain ...string) EnvTree {
@@ -178,7 +178,7 @@ func (e EnvTree) FindChildrenKeys(keyChain ...string) ([]string, error) {
 }
 
 // FindChildrenKeysUnsecured is insecured version of FindChildrenKeys to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the node doesn't exist, it returns empty string slice.
 // This function has to be used carefully
 func (e EnvTree) FindChildrenKeysUnsecured(keyChain ...string) []string {
@@ -215,7 +215,7 @@ func (e EnvTree) GetString() (string, error) {
 }
 
 // GetStringUnsecured is insecured version of GetString to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing, it returns default zero string value.
 // This function has to be used carefully
 func (e EnvTree) GetStringUnsecured() string {
@@ -233,7 +233,7 @@ func (e EnvTree) GetInt() (int, error) {
 }
 
 // GetIntUnsecured is insecured version of GetInt to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not an int value, it returns default zero int value.
 // This function has to be used carefully
 func (e EnvTree) GetIntUnsecured() int {
@@ -251,7 +251,7 @@ func (e EnvTree) GetFloat() (float32, error) {
 }
 
 // GetFloatUnsecured is insecured version of GetFloat to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a floating value, it returns default zero floating value.
 // This function has to be used carefully
 func (e EnvTree) GetFloatUnsecured() float32 {
@@ -269,7 +269,7 @@ func (e EnvTree) GetBool() (bool, error) {
 }
 
 // GetBoolUnsecured is insecured version of GetBool to avoid the burden
-// of rechecking errors if it was done already. If any errors occured cause
+// of rechecking errors if it was done already. If any errors occurred cause
 // the variable is missing or not a boolean value, it returns default zero boolean value.
 // This function has to be used carefully
 func (e EnvTree) GetBoolUnsecured() bool {
