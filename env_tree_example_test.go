@@ -31,6 +31,30 @@ func ExampleEnvTree_FindString() {
 	//  Variable not found
 }
 
+func ExampleEnvTree_FindStringUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.FindStringUnsecured("ENVH", "DB", "USERNAME"))
+	fmt.Println(env.FindStringUnsecured("ENVH", "DB", "WHATEVER"))
+	// Output:
+	// foo
+	//
+}
+
 func ExampleEnvTree_FindInt() {
 	os.Clearenv()
 	setEnv("ENVH_DB_USERNAME", "foo")
@@ -55,6 +79,32 @@ func ExampleEnvTree_FindInt() {
 	// 3306 <nil>
 	// 0 Value "foo" can't be converted to type "int"
 	// 0 Variable not found
+}
+
+func ExampleEnvTree_FindIntUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.FindIntUnsecured("ENVH", "DB", "PORT"))
+	fmt.Println(env.FindIntUnsecured("ENVH", "DB", "USERNAME"))
+	fmt.Println(env.FindIntUnsecured("ENVH", "DB", "WHATEVER"))
+	// Output:
+	// 3306
+	// 0
+	// 0
 }
 
 func ExampleEnvTree_FindBool() {
@@ -83,6 +133,32 @@ func ExampleEnvTree_FindBool() {
 	// false Variable not found
 }
 
+func ExampleEnvTree_FindBoolUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.FindBoolUnsecured("ENVH", "MAILER", "ENABLED"))
+	fmt.Println(env.FindBoolUnsecured("ENVH", "DB", "USERNAME"))
+	fmt.Println(env.FindBoolUnsecured("ENVH", "DB", "WHATEVER"))
+	// Output:
+	// true
+	// false
+	// false
+}
+
 func ExampleEnvTree_FindFloat() {
 	os.Clearenv()
 	setEnv("ENVH_DB_USERNAME", "foo")
@@ -107,6 +183,32 @@ func ExampleEnvTree_FindFloat() {
 	// 95.6 <nil>
 	// 0 Value "foo" can't be converted to type "float"
 	// 0 Variable not found
+}
+
+func ExampleEnvTree_FindFloatUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.FindFloatUnsecured("ENVH", "DB", "USAGE", "LIMIT"))
+	fmt.Println(env.FindFloatUnsecured("ENVH", "DB", "USERNAME"))
+	fmt.Println(env.FindFloatUnsecured("ENVH", "DB", "WHATEVER"))
+	// Output:
+	// 95.6
+	// 0
+	// 0
 }
 
 func ExampleEnvTree_IsExistingSubTree() {
@@ -157,6 +259,32 @@ func ExampleEnvTree_HasSubTreeValue() {
 	// true <nil>
 	// false <nil>
 	// false No node found at path "ENVH -> MAILER -> WHATEVER"
+}
+
+func ExampleEnvTree_HasSubTreeValueUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.HasSubTreeValueUnsecured("ENVH", "MAILER", "HOST"))
+	fmt.Println(env.HasSubTreeValueUnsecured("ENVH", "MAILER"))
+	fmt.Println(env.HasSubTreeValueUnsecured("ENVH", "MAILER", "WHATEVER"))
+	// Output:
+	// true
+	// false
+	// false
 }
 
 func ExampleEnvTree_HasValue() {
@@ -229,6 +357,42 @@ func ExampleEnvTree_FindSubTree() {
 	// {<nil>} No node found at path "ENVH -> MAILER -> WHATEVER"
 }
 
+func ExampleEnvTree_FindSubTreeUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	dbTree := env.FindSubTreeUnsecured("ENVH", "DB")
+	dbChildrenKeys := dbTree.GetChildrenKeys()
+	sort.Strings(dbChildrenKeys)
+
+	fmt.Println(dbChildrenKeys)
+
+	mailerTree := env.FindSubTreeUnsecured("ENVH", "MAILER")
+	mailerChildrenKeys := mailerTree.GetChildrenKeys()
+	sort.Strings(mailerChildrenKeys)
+
+	fmt.Println(mailerChildrenKeys)
+
+	fmt.Println(env.FindSubTreeUnsecured("ENVH", "MAILER", "WHATEVER"))
+	// Output:
+	// [PASSWORD PORT USAGE USERNAME]
+	// [ENABLED HOST PASSWORD USERNAME]
+	// {<nil>}
+}
+
 func ExampleEnvTree_GetKey() {
 	os.Clearenv()
 	setEnv("ENVH_DB_USERNAME", "foo")
@@ -286,6 +450,34 @@ func ExampleEnvTree_FindChildrenKeys() {
 	// [] No node found at path "ENVH -> WHATEVER"
 }
 
+func ExampleEnvTree_FindChildrenKeysUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	children := env.FindChildrenKeysUnsecured("ENVH", "DB")
+
+	sort.Strings(children)
+
+	fmt.Println(children)
+	fmt.Println(env.FindChildrenKeysUnsecured("ENVH", "WHATEVER"))
+	// Output:
+	// [PASSWORD PORT USAGE USERNAME]
+	// []
+}
+
 func ExampleEnvTree_GetBool() {
 	os.Clearenv()
 	setEnv("ENVH_DB_USERNAME", "foo")
@@ -314,6 +506,36 @@ func ExampleEnvTree_GetBool() {
 	// Output:
 	// false Variable not found
 	// true <nil>
+}
+
+func ExampleEnvTree_GetBoolUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	enabledTree, err := env.FindSubTree("ENVH", "MAILER", "ENABLED")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.GetBoolUnsecured())
+	fmt.Println(enabledTree.GetBoolUnsecured())
+	// Output:
+	// false
+	// true
 }
 
 func ExampleEnvTree_GetInt() {
@@ -346,6 +568,36 @@ func ExampleEnvTree_GetInt() {
 	// 3306 <nil>
 }
 
+func ExampleEnvTree_GetIntUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	portTree, err := env.FindSubTree("ENVH", "DB", "PORT")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.GetIntUnsecured())
+	fmt.Println(portTree.GetIntUnsecured())
+	// Output:
+	// 0
+	// 3306
+}
+
 func ExampleEnvTree_GetString() {
 	os.Clearenv()
 	setEnv("ENVH_DB_USERNAME", "foo")
@@ -376,6 +628,36 @@ func ExampleEnvTree_GetString() {
 	// foo <nil>
 }
 
+func ExampleEnvTree_GetStringUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	usernameTree, err := env.FindSubTree("ENVH", "DB", "USERNAME")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.GetStringUnsecured())
+	fmt.Println(usernameTree.GetStringUnsecured())
+	// Output:
+	//
+	// foo
+}
+
 func ExampleEnvTree_GetFloat() {
 	os.Clearenv()
 	setEnv("ENVH_DB_USERNAME", "foo")
@@ -404,6 +686,36 @@ func ExampleEnvTree_GetFloat() {
 	// Output:
 	// 0 Variable not found
 	// 95.6 <nil>
+}
+
+func ExampleEnvTree_GetFloatUnsecured() {
+	os.Clearenv()
+	setEnv("ENVH_DB_USERNAME", "foo")
+	setEnv("ENVH_DB_PASSWORD", "bar")
+	setEnv("ENVH_DB_PORT", "3306")
+	setEnv("ENVH_DB_USAGE_LIMIT", "95.6")
+	setEnv("ENVH_MAILER_HOST", "127.0.0.1")
+	setEnv("ENVH_MAILER_USERNAME", "foo")
+	setEnv("ENVH_MAILER_PASSWORD", "bar")
+	setEnv("ENVH_MAILER_ENABLED", "true")
+
+	env, err := NewEnvTree("^ENVH", "_")
+
+	if err != nil {
+		return
+	}
+
+	portTree, err := env.FindSubTree("ENVH", "DB", "USAGE", "LIMIT")
+
+	if err != nil {
+		return
+	}
+
+	fmt.Println(env.GetFloatUnsecured())
+	fmt.Println(portTree.GetFloatUnsecured())
+	// Output:
+	// 0
+	// 95.6
 }
 
 func ExampleEnvTree_GetChildrenKeys() {

@@ -95,6 +95,22 @@ func TestFindStringFromTree(t *testing.T) {
 	assert.Equal(t, "", value, "Must return empty string")
 }
 
+func TestFindStringUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_TEST3", "test1")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value := envTree.FindStringUnsecured("ENVH", "TEST1", "TEST2", "TEST3")
+
+	assert.Equal(t, "test1", value, "Must return value")
+
+	value = envTree.FindStringUnsecured("ENVH_TEST1000")
+
+	assert.Equal(t, "", value, "Must return empty string")
+}
+
 func TestFindIntFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_INT", "1")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
@@ -116,6 +132,27 @@ func TestFindIntFromTree(t *testing.T) {
 	value, err = envTree.FindInt("ENVH", "TEST1", "TEST2", "STRING")
 
 	assert.EqualError(t, err, `Value "test" can't be converted to type "int"`, "Must return an error when variable can't be converted")
+	assert.Equal(t, 0, value, "Must return empty string")
+}
+
+func TestFindIntUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_INT", "1")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value := envTree.FindIntUnsecured("ENVH", "TEST1", "TEST2", "INT")
+
+	assert.Equal(t, 1, value, "Must return value")
+
+	value = envTree.FindIntUnsecured("TEST100")
+
+	assert.Equal(t, 0, value, "Must return value")
+
+	value = envTree.FindIntUnsecured("ENVH", "TEST1", "TEST2", "STRING")
+
 	assert.Equal(t, 0, value, "Must return empty string")
 }
 
@@ -143,6 +180,27 @@ func TestFindBoolFromTree(t *testing.T) {
 	assert.Equal(t, false, value, "Must return empty string")
 }
 
+func TestFindBoolUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_BOOL", "1")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value := envTree.FindBoolUnsecured("ENVH", "TEST1", "TEST2", "BOOL")
+
+	assert.Equal(t, true, value, "Must return value")
+
+	value = envTree.FindBoolUnsecured("TEST100")
+
+	assert.Equal(t, false, value, "Must return value")
+
+	value = envTree.FindBoolUnsecured("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.Equal(t, false, value, "Must return empty string")
+}
+
 func TestFindFloatFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
@@ -164,6 +222,27 @@ func TestFindFloatFromTree(t *testing.T) {
 	value, err = envTree.FindFloat("ENVH", "TEST1", "TEST2", "STRING")
 
 	assert.EqualError(t, err, `Value "test" can't be converted to type "float"`, "Must return an error when variable can't be converted")
+	assert.Equal(t, float32(0), value, "Must return empty string")
+}
+
+func TestFindFloatUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value := envTree.FindFloatUnsecured("ENVH", "TEST1", "TEST2", "FLOAT")
+
+	assert.Equal(t, float32(0.01), value, "Must return value")
+
+	value = envTree.FindFloatUnsecured("TEST100")
+
+	assert.Equal(t, float32(0), value, "Must return value")
+
+	value = envTree.FindFloatUnsecured("ENVH", "TEST1", "TEST2", "STRING")
+
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }
 
@@ -201,6 +280,22 @@ func TestHasSubTreeValueFromTree(t *testing.T) {
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST10 -> TEST20 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
 
+func TestHasSubTreeValueUnsecured(t *testing.T) {
+	setEnv("ENVH_TEST10_TEST20_TEST30", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	v := envTree.HasSubTreeValueUnsecured("ENVH", "TEST10", "TEST20", "TEST30")
+
+	assert.True(t, v, "Must return true if environment node has a value")
+
+	v = envTree.HasSubTreeValueUnsecured("ENVH", "TEST10", "TEST20")
+
+	assert.False(t, v, "Must return false if environment node doesn't have value")
+}
+
 func TestFindChildrenKeysFromTree(t *testing.T) {
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
@@ -227,6 +322,30 @@ func TestFindChildrenKeysFromTree(t *testing.T) {
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
 }
 
+func TestFindChildrenKeysUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST16", "test3")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	v := envTree.FindChildrenKeysUnsecured("ENVH", "TEST11", "TEST12", "TEST13")
+
+	sort.Strings(v)
+
+	assert.Equal(t, []string{"TEST14", "TEST15", "TEST16"}, v, "Must return all node children keys")
+
+	v = envTree.FindChildrenKeysUnsecured("ENVH", "TEST11", "TEST12", "TEST13", "TEST14")
+
+	assert.Empty(t, v, "Must return no node children keys")
+
+	v = envTree.FindChildrenKeysUnsecured("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
+
+	assert.Empty(t, v, "Must return empty value")
+}
+
 func TestFindSubTreeFromTree(t *testing.T) {
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
 	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
@@ -249,6 +368,27 @@ func TestFindSubTreeFromTree(t *testing.T) {
 	_, err = envTree.FindSubTree("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
 
 	assert.EqualError(t, err, `No node found at path "ENVH -> TEST11 -> TEST12 -> TEST13 -> TEST10000"`, "Must returns an error, node doesn't exists")
+}
+
+func TestFindSubTreeUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST14", "test1")
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST15", "test2")
+	setEnv("ENVH_TEST11_TEST12_TEST13_TEST16", "test3")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	tree := envTree.FindSubTreeUnsecured("ENVH", "TEST11", "TEST12", "TEST13")
+
+	v, err := tree.FindString("TEST14")
+
+	assert.NoError(t, err, "Must returns no error")
+	assert.Equal(t, "test1", v, "Must return value corresponding to key TEST14")
+
+	tree = envTree.FindSubTreeUnsecured("ENVH", "TEST11", "TEST12", "TEST13", "TEST10000")
+
+	assert.Equal(t, EnvTree{}, tree, "Must return empty value")
 }
 
 func TestGetStringFromTree(t *testing.T) {
@@ -274,6 +414,30 @@ func TestGetStringFromTree(t *testing.T) {
 	value, err = subTree.GetString()
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, "", value, "Must return empty string")
+}
+
+func TestGetStringUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_TEST3", "test1")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "TEST3")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value := subTree.GetStringUnsecured()
+
+	assert.Equal(t, "test1", value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetStringUnsecured()
+
 	assert.Equal(t, "", value, "Must return empty string")
 }
 
@@ -313,6 +477,39 @@ func TestGetIntFromTree(t *testing.T) {
 	assert.Equal(t, 0, value, "Must return empty string")
 }
 
+func TestGetIntUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_INT", "1")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "INT")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	value := subTree.GetIntUnsecured()
+
+	assert.Equal(t, 1, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetIntUnsecured()
+
+	assert.Equal(t, 0, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetIntUnsecured()
+
+	assert.Equal(t, 0, value, "Must return empty string")
+}
+
 func TestGetBoolFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_BOOL", "true")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
@@ -349,6 +546,39 @@ func TestGetBoolFromTree(t *testing.T) {
 	assert.Equal(t, false, value, "Must return empty string")
 }
 
+func TestGetBoolUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_BOOL", "true")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "BOOL")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value := subTree.GetBoolUnsecured()
+
+	assert.Equal(t, true, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetBoolUnsecured()
+
+	assert.Equal(t, false, value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetBoolUnsecured()
+
+	assert.Equal(t, false, value, "Must return empty string")
+}
+
 func TestGetFloatFromTree(t *testing.T) {
 	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
 	setEnv("ENVH_TEST1_TEST2_STRING", "test")
@@ -382,6 +612,39 @@ func TestGetFloatFromTree(t *testing.T) {
 	value, err = subTree.GetFloat()
 
 	assert.EqualError(t, err, `Value "test" can't be converted to type "float"`, "Must return an error when variable can't be converted")
+	assert.Equal(t, float32(0), value, "Must return empty string")
+}
+
+func TestGetFloatUnsecuredFromTree(t *testing.T) {
+	setEnv("ENVH_TEST1_TEST2_FLOAT", "0.01")
+	setEnv("ENVH_TEST1_TEST2_STRING", "test")
+
+	envTree, err := NewEnvTree("ENVH", "_")
+
+	assert.NoError(t, err, "Must returns no error")
+
+	subTree, err := envTree.FindSubTree("ENVH", "TEST1", "TEST2", "FLOAT")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value := subTree.GetFloatUnsecured()
+
+	assert.Equal(t, float32(0.01), value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetFloatUnsecured()
+
+	assert.Equal(t, float32(0), value, "Must return value")
+
+	subTree, err = envTree.FindSubTree("ENVH", "TEST1", "TEST2", "STRING")
+
+	assert.NoError(t, err, "Must return no errors")
+
+	value = subTree.GetFloatUnsecured()
+
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }
 
