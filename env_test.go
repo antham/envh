@@ -68,6 +68,20 @@ func TestFindEntries(t *testing.T) {
 	assert.EqualError(t, err, "error parsing regexp: missing argument to repetition operator: `?`", "Must return an error when regexp is unvalid")
 }
 
+func TestFindEntriesUnsecured(t *testing.T) {
+	setTestingEnvs()
+
+	q := NewEnv()
+
+	keys := q.FindEntriesUnsecured(".*?1")
+
+	assert.Len(t, keys, 1, "Must contains 1 elements")
+	assert.Equal(t, "test1", keys["TEST1"], "Must have env key and value")
+
+	keys = q.FindEntriesUnsecured("?")
+	assert.Len(t, keys, 0, "Must contains 0 elements")
+}
+
 func TestGetString(t *testing.T) {
 	setTestingEnvs()
 
@@ -81,6 +95,20 @@ func TestGetString(t *testing.T) {
 	value, err = q.GetString("TEST100")
 
 	assert.EqualError(t, err, "Variable not found", "Must return an error when variable can't be found")
+	assert.Equal(t, "", value, "Must return empty string")
+}
+
+func TestGetStringUnsecured(t *testing.T) {
+	setTestingEnvs()
+
+	q := NewEnv()
+
+	value := q.GetStringUnsecured("TEST1")
+
+	assert.Equal(t, "test1", value, "Must return value")
+
+	value = q.GetStringUnsecured("TEST100")
+
 	assert.Equal(t, "", value, "Must return empty string")
 }
 
@@ -109,6 +137,28 @@ func TestGetInt(t *testing.T) {
 	assert.Equal(t, 0, value, "Must return empty string")
 }
 
+func TestGetIntUnsecured(t *testing.T) {
+	err := os.Setenv("TEST3", "1")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	q := NewEnv()
+
+	value := q.GetIntUnsecured("TEST3")
+
+	assert.Equal(t, 1, value, "Must return value")
+
+	value = q.GetIntUnsecured("TEST100")
+
+	assert.Equal(t, 0, value, "Must return value")
+
+	value = q.GetIntUnsecured("TEST1")
+
+	assert.Equal(t, 0, value, "Must return empty string")
+}
+
 func TestGetBool(t *testing.T) {
 	err := os.Setenv("TEST4", "true")
 
@@ -134,6 +184,28 @@ func TestGetBool(t *testing.T) {
 	assert.Equal(t, false, value, "Must return empty string")
 }
 
+func TestGetBoolUnsecured(t *testing.T) {
+	err := os.Setenv("TEST4", "true")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	q := NewEnv()
+
+	value := q.GetBoolUnsecured("TEST4")
+
+	assert.Equal(t, true, value, "Must return value")
+
+	value = q.GetBoolUnsecured("TEST100")
+
+	assert.Equal(t, false, value, "Must return value")
+
+	value = q.GetBoolUnsecured("TEST1")
+
+	assert.Equal(t, false, value, "Must return empty string")
+}
+
 func TestGetFloat(t *testing.T) {
 	err := os.Setenv("TEST5", "0.01")
 
@@ -156,5 +228,27 @@ func TestGetFloat(t *testing.T) {
 	value, err = q.GetFloat("TEST1")
 
 	assert.EqualError(t, err, `Value "test1" can't be converted to type "float"`, "Must return an error when variable can't be found")
+	assert.Equal(t, float32(0), value, "Must return empty string")
+}
+
+func TestGetFloatUnsecured(t *testing.T) {
+	err := os.Setenv("TEST5", "0.01")
+
+	if err != nil {
+		logrus.Fatal(err)
+	}
+
+	q := NewEnv()
+
+	value := q.GetFloatUnsecured("TEST5")
+
+	assert.Equal(t, float32(0.01), value, "Must return value")
+
+	value = q.GetFloatUnsecured("TEST100")
+
+	assert.Equal(t, float32(0), value, "Must return value")
+
+	value = q.GetFloatUnsecured("TEST1")
+
 	assert.Equal(t, float32(0), value, "Must return empty string")
 }

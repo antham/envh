@@ -33,10 +33,34 @@ func (e EnvTree) FindString(keyChain ...string) (string, error) {
 	return getString(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
+// FindStringUnsecured is insecured version of FindString to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing, it returns default zero string value.
+// This function has to be used carefully
+func (e EnvTree) FindStringUnsecured(keyChain ...string) string {
+	if val, err := getString(getNodeValueByKeyChain(e.root, &keyChain)); err == nil {
+		return val
+	}
+
+	return ""
+}
+
 // FindInt returns an integer if key chain exists
 // or an error if value is not an integer or doesn't exist
 func (e EnvTree) FindInt(keyChain ...string) (int, error) {
 	return getInt(getNodeValueByKeyChain(e.root, &keyChain))
+}
+
+// FindIntUnsecured is insecured version of FindInt to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not an int value, it returns default zero int value.
+// This function has to be used carefully
+func (e EnvTree) FindIntUnsecured(keyChain ...string) int {
+	if val, err := getInt(getNodeValueByKeyChain(e.root, &keyChain)); err == nil {
+		return val
+	}
+
+	return 0
 }
 
 // FindFloat returns a float if key chain exists
@@ -45,10 +69,34 @@ func (e EnvTree) FindFloat(keyChain ...string) (float32, error) {
 	return getFloat(getNodeValueByKeyChain(e.root, &keyChain))
 }
 
+// FindFloatUnsecured is insecured version of FindFloat to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a floating value, it returns default zero floating value.
+// This function has to be used carefully
+func (e EnvTree) FindFloatUnsecured(keyChain ...string) float32 {
+	if val, err := getFloat(getNodeValueByKeyChain(e.root, &keyChain)); err == nil {
+		return val
+	}
+
+	return 0
+}
+
 // FindBool returns a boolean if key chain exists
 // or an error if value is not a boolean or doesn't exist
 func (e EnvTree) FindBool(keyChain ...string) (bool, error) {
 	return getBool(getNodeValueByKeyChain(e.root, &keyChain))
+}
+
+// FindBoolUnsecured is insecured version of FindBool to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a boolean value, it returns default zero boolean value.
+// This function has to be used carefully
+func (e EnvTree) FindBoolUnsecured(keyChain ...string) bool {
+	if val, err := getBool(getNodeValueByKeyChain(e.root, &keyChain)); err == nil {
+		return val
+	}
+
+	return false
 }
 
 // IsExistingSubTree returns true if key chain has a tree associated or false if not
@@ -71,6 +119,20 @@ func (e EnvTree) HasSubTreeValue(keyChain ...string) (bool, error) {
 	return n.hasValue, nil
 }
 
+// HasSubTreeValueUnsecured is insecured version of HasSubTreeValue to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the node doesn't exist, it returns false.
+// This function has to be used carefully
+func (e EnvTree) HasSubTreeValueUnsecured(keyChain ...string) bool {
+	n, exists := e.root.findNodeByKeyChain(&keyChain)
+
+	if !exists {
+		return false
+	}
+
+	return n.hasValue
+}
+
 // FindSubTree returns underlying tree from key chain,
 // for instance given A -> B -> C -> D tree,
 // "A" "B" "C" key chain will return C sub tree.
@@ -82,6 +144,18 @@ func (e EnvTree) FindSubTree(keyChain ...string) (EnvTree, error) {
 	}
 
 	return EnvTree{}, NodeNotFoundError{keyChain}
+}
+
+// FindSubTreeUnsecured is insecured version of FindSubTree to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the node doesn't exist, it returns empty EnvTree.
+// This function has to be used carefully
+func (e EnvTree) FindSubTreeUnsecured(keyChain ...string) EnvTree {
+	if n, exists := e.root.findNodeByKeyChain(&keyChain); exists {
+		return EnvTree{n}
+	}
+
+	return EnvTree{}
 }
 
 // FindChildrenKeys returns all children keys for a given key chain.
@@ -103,6 +177,26 @@ func (e EnvTree) FindChildrenKeys(keyChain ...string) ([]string, error) {
 	return keys, nil
 }
 
+// FindChildrenKeysUnsecured is insecured version of FindChildrenKeys to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the node doesn't exist, it returns empty string slice.
+// This function has to be used carefully
+func (e EnvTree) FindChildrenKeysUnsecured(keyChain ...string) []string {
+	n, exists := e.root.findNodeByKeyChain(&keyChain)
+
+	if !exists {
+		return []string{}
+	}
+
+	keys := []string{}
+
+	for _, c := range n.children {
+		keys = append(keys, c.key)
+	}
+
+	return keys
+}
+
 // GetChildrenKeys retrieves all current tree children node keys
 func (e EnvTree) GetChildrenKeys() []string {
 	keys := []string{}
@@ -120,10 +214,34 @@ func (e EnvTree) GetString() (string, error) {
 	return getString(e.getValue())
 }
 
+// GetStringUnsecured is insecured version of GetString to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing, it returns default zero string value.
+// This function has to be used carefully
+func (e EnvTree) GetStringUnsecured() string {
+	if val, err := getString(e.getValue()); err == nil {
+		return val
+	}
+
+	return ""
+}
+
 // GetInt returns current tree value as int if value exists
 // or an error if value is not an integer or doesn't exist
 func (e EnvTree) GetInt() (int, error) {
 	return getInt(e.getValue())
+}
+
+// GetIntUnsecured is insecured version of GetInt to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not an int value, it returns default zero int value.
+// This function has to be used carefully
+func (e EnvTree) GetIntUnsecured() int {
+	if val, err := getInt(e.getValue()); err == nil {
+		return val
+	}
+
+	return 0
 }
 
 // GetFloat returns current tree value as float if value exists
@@ -132,10 +250,34 @@ func (e EnvTree) GetFloat() (float32, error) {
 	return getFloat(e.getValue())
 }
 
+// GetFloatUnsecured is insecured version of GetFloat to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a floating value, it returns default zero floating value.
+// This function has to be used carefully
+func (e EnvTree) GetFloatUnsecured() float32 {
+	if val, err := getFloat(e.getValue()); err == nil {
+		return val
+	}
+
+	return 0
+}
+
 // GetBool returns current tree value as boolean if value exists
 // or an error if value is not a boolean or doesn't exist
 func (e EnvTree) GetBool() (bool, error) {
 	return getBool(e.getValue())
+}
+
+// GetBoolUnsecured is insecured version of GetBool to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a boolean value, it returns default zero boolean value.
+// This function has to be used carefully
+func (e EnvTree) GetBoolUnsecured() bool {
+	if val, err := getBool(e.getValue()); err == nil {
+		return val
+	}
+
+	return false
 }
 
 // HasValue returns true if current tree has a value defined

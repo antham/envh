@@ -49,6 +49,22 @@ func (e Env) GetString(key string) (string, error) {
 	})
 }
 
+// GetStringUnsecured is insecured version of GetString to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing, it returns default zero string value.
+// This function has to be used carefully
+func (e Env) GetStringUnsecured(key string) string {
+	if val, err := getString(func() (string, bool) {
+		v, ok := (*e.envs)[key]
+
+		return v, ok
+	}); err == nil {
+		return val
+	}
+
+	return ""
+}
+
 // GetInt returns an integer if variable exists
 // or an error if value is not an integer or doesn't exist
 func (e Env) GetInt(key string) (int, error) {
@@ -57,6 +73,22 @@ func (e Env) GetInt(key string) (int, error) {
 
 		return v, ok
 	})
+}
+
+// GetIntUnsecured is insecured version of GetInt to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not an int value, it returns default zero int value.
+// This function has to be used carefully
+func (e Env) GetIntUnsecured(key string) int {
+	if val, err := getInt(func() (string, bool) {
+		v, ok := (*e.envs)[key]
+
+		return v, ok
+	}); err == nil {
+		return val
+	}
+
+	return 0
 }
 
 // GetFloat returns a float if variable exists
@@ -69,6 +101,22 @@ func (e Env) GetFloat(key string) (float32, error) {
 	})
 }
 
+// GetFloatUnsecured is insecured version of GetFloat to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a floating value, it returns default zero floating value.
+// This function has to be used carefully
+func (e Env) GetFloatUnsecured(key string) float32 {
+	if val, err := getFloat(func() (string, bool) {
+		v, ok := (*e.envs)[key]
+
+		return v, ok
+	}); err == nil {
+		return val
+	}
+
+	return 0
+}
+
 // GetBool returns a boolean if variable exists
 // or an error if value is not a boolean or doesn't exist
 func (e Env) GetBool(key string) (bool, error) {
@@ -77,6 +125,22 @@ func (e Env) GetBool(key string) (bool, error) {
 
 		return v, ok
 	})
+}
+
+// GetBoolUnsecured is insecured version of GetBool to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a boolean value, it returns default zero boolean value.
+// This function has to be used carefully
+func (e Env) GetBoolUnsecured(key string) bool {
+	if val, err := getBool(func() (string, bool) {
+		v, ok := (*e.envs)[key]
+
+		return v, ok
+	}); err == nil {
+		return val
+	}
+
+	return false
 }
 
 // FindEntries retrieves all keys matching a given regexp and their
@@ -97,4 +161,26 @@ func (e Env) FindEntries(reg string) (map[string]string, error) {
 	}
 
 	return results, nil
+}
+
+// FindEntriesUnsecured is insecured version of FindEntriesUnsecured to avoid the burden
+// of rechecking errors if it was done already. If any errors occured cause
+// the variable is missing or not a boolean value, it returns default empty map.
+// This function has to be used carefully.
+func (e Env) FindEntriesUnsecured(reg string) map[string]string {
+	results := map[string]string{}
+
+	r, err := regexp.Compile(reg)
+
+	if err != nil {
+		return results
+	}
+
+	for k, v := range *e.envs {
+		if r.MatchString(k) {
+			results[k] = v
+		}
+	}
+
+	return results
 }

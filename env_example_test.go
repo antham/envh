@@ -46,6 +46,16 @@ func ExampleEnv_GetString() {
 	// Output: world <nil>
 }
 
+func ExampleEnv_GetStringUnsecured() {
+	os.Clearenv()
+	setEnv("HELLO", "world")
+
+	env := NewEnv()
+
+	fmt.Println(env.GetStringUnsecured("HELLO"))
+	// Output: world
+}
+
 func ExampleEnv_GetInt() {
 	os.Clearenv()
 	setEnv("INT", "1")
@@ -59,6 +69,21 @@ func ExampleEnv_GetInt() {
 	// Output:
 	// 1 <nil>
 	// 0 Value "TEST" can't be converted to type "int"
+}
+
+func ExampleEnv_GetIntUnsecured() {
+	os.Clearenv()
+	setEnv("INT", "1")
+	setEnv("STRING", "TEST")
+
+	env := NewEnv()
+
+	fmt.Println(env.GetIntUnsecured("INT"))
+	fmt.Println(env.GetIntUnsecured("STRING"))
+
+	// Output:
+	// 1
+	// 0
 }
 
 func ExampleEnv_GetFloat() {
@@ -79,6 +104,21 @@ func ExampleEnv_GetFloat() {
 	// 0 Value "TEST" can't be converted to type "float"
 }
 
+func ExampleEnv_GetFloatUnsecured() {
+	os.Clearenv()
+	setEnv("FLOAT", "1.1")
+	setEnv("STRING", "TEST")
+
+	env := NewEnv()
+
+	fmt.Printf("%0.1f\n", env.GetFloatUnsecured("FLOAT"))
+	fmt.Println(env.GetFloatUnsecured("STRING"))
+
+	// Output:
+	// 1.1
+	// 0
+}
+
 func ExampleEnv_GetBool() {
 	os.Clearenv()
 	setEnv("BOOL", "true")
@@ -92,6 +132,21 @@ func ExampleEnv_GetBool() {
 	// Output:
 	// true <nil>
 	// false Value "TEST" can't be converted to type "bool"
+}
+
+func ExampleEnv_GetBoolUnsecured() {
+	os.Clearenv()
+	setEnv("BOOL", "true")
+	setEnv("STRING", "TEST")
+
+	env := NewEnv()
+
+	fmt.Println(env.GetBoolUnsecured("BOOL"))
+	fmt.Println(env.GetBoolUnsecured("STRING"))
+
+	// Output:
+	// true
+	// false
 }
 
 func ExampleEnv_FindEntries() {
@@ -112,4 +167,23 @@ func ExampleEnv_FindEntries() {
 	// Output:
 	// API -> PASSWORD = password, API -> USERNAME = password <nil>
 	// map[] error parsing regexp: missing argument to repetition operator: `*`
+}
+
+func ExampleEnv_FindEntriesUnsecured() {
+	os.Clearenv()
+	setEnv("API_USERNAME", "user")
+	setEnv("API_PASSWORD", "password")
+	setEnv("DB_USERNAME", "user")
+	setEnv("DB_PASSWORD", "user")
+
+	env := NewEnv()
+
+	entries := env.FindEntriesUnsecured("API.*")
+
+	fmt.Printf("API -> PASSWORD = %s, API -> USERNAME = %s\n", entries["API_PASSWORD"], entries["API_PASSWORD"])
+	fmt.Println(env.FindEntriesUnsecured("*"))
+
+	// Output:
+	// API -> PASSWORD = password, API -> USERNAME = password
+	// map[]
 }
