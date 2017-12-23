@@ -70,7 +70,6 @@ func TestPopulateStructWithTypeErrors(t *testing.T) {
 	type g struct {
 		init       func()
 		checkError func(err error)
-		teardown   func()
 	}
 
 	tests := []g{
@@ -185,7 +184,6 @@ func TestPopulateStructWithStrictCheckEnabled(t *testing.T) {
 	type g struct {
 		init       func()
 		checkError func(err error)
-		teardown   func()
 	}
 
 	tests := []g{
