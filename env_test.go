@@ -57,7 +57,7 @@ func TestFindEntries(t *testing.T) {
 
 	q := NewEnv()
 
-	keys, err := q.FindEntries(".*?1")
+	keys, err := q.FindEntries(".*TEST\\d.*")
 
 	assert.NoError(t, err, "Must return no errors")
 	assert.Len(t, keys, 1, "Must contains 1 elements")
