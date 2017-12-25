@@ -62,7 +62,7 @@ func TestFindEntries(t *testing.T) {
 	assert.NoError(t, err, "Must return no errors")
 	assert.Len(t, keys, 2, "Must contains 2 elements")
 	assert.Equal(t, "test1", keys["TEST1"], "Must have env key and value")
-	assert.Equal(t, "test2", keys["TEST2"], "Must have env key and value")
+	assert.Equal(t, "=test2=", keys["TEST2"], "Must have env key and value")
 
 	_, err = q.FindEntries("?")
 
@@ -78,7 +78,7 @@ func TestFindEntriesUnsecured(t *testing.T) {
 
 	assert.Len(t, keys, 2, "Must contains 2 elements")
 	assert.Equal(t, "test1", keys["TEST1"], "Must have env key and value")
-	assert.Equal(t, "test2", keys["TEST2"], "Must have env key and value")
+	assert.Equal(t, "=test2=", keys["TEST2"], "Must have env key and value")
 
 	keys = q.FindEntriesUnsecured("?")
 	assert.Len(t, keys, 0, "Must contains 0 elements")
