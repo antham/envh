@@ -1,0 +1,13 @@
+name: Generate the changelog
+
+on:
+  push:
+    tags:
+      - "*"
+
+permissions:
+  contents: write
+
+jobs:
+  call-workflow:
+    uses: antham/go-workflow-github-action/.github/workflows/generate-changelog.yml@master
