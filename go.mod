@@ -1,9 +1,9 @@
 module github.com/antham/envh
 
-go 1.18
+go 1.23
 
 require (
-	github.com/sirupsen/logrus v1.9.4
+	github.com/sirupsen/logrus v1.10.0
 	github.com/stretchr/testify v1.11.1
 )
 
