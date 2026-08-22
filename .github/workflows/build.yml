@@ -13,4 +13,4 @@ permissions:
 
 jobs:
   call-workflow:
-    uses: antham/go-workflow-github-action/.github/workflows/build-library.yml@master
+    uses: ./.github/workflows/build-library.yml
