@@ -12,5 +12,31 @@ permissions:
   contents: read
 
 jobs:
-  call-workflow:
-    uses: antham/go-workflow-github-action/.github/workflows/build-library.yml@master
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Build
+        run: |
+          go build
+
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: latest
+
+      - name: Test
+        run: |
+          go test -race -cover -coverprofile=coverage.txt ./...
+
+      - name: Push on codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
