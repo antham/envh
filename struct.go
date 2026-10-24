@@ -25,11 +25,12 @@ type entry struct {
 func populateInt(forceDefinition bool, tree *EnvTree, val reflect.Value, keyChain []string) error {
 	v, err := tree.FindInt(keyChain...)
 
-	if forceDefinition && err != nil {
-		return err
-	}
-
-	if _, ok := err.(WrongTypeError); ok {
+	if err != nil {
+		if !forceDefinition {
+			if _, missing := err.(VariableNotFoundError); missing {
+				return nil
+			}
+		}
 		return err
 	}
 
@@ -41,11 +42,12 @@ func populateInt(forceDefinition bool, tree *EnvTree, val reflect.Value, keyChai
 func populateFloat(forceDefinition bool, tree *EnvTree, val reflect.Value, keyChain []string) error {
 	v, err := tree.FindFloat(keyChain...)
 
-	if forceDefinition && err != nil {
-		return err
-	}
-
-	if _, ok := err.(WrongTypeError); ok {
+	if err != nil {
+		if !forceDefinition {
+			if _, missing := err.(VariableNotFoundError); missing {
+				return nil
+			}
+		}
 		return err
 	}
 
@@ -57,7 +59,12 @@ func populateFloat(forceDefinition bool, tree *EnvTree, val reflect.Value, keyCh
 func populateString(forceDefinition bool, tree *EnvTree, val reflect.Value, keyChain []string) error {
 	v, err := tree.FindString(keyChain...)
 
-	if forceDefinition && err != nil {
+	if err != nil {
+		if !forceDefinition {
+			if _, missing := err.(VariableNotFoundError); missing {
+				return nil
+			}
+		}
 		return err
 	}
 
@@ -69,11 +76,12 @@ func populateString(forceDefinition bool, tree *EnvTree, val reflect.Value, keyC
 func populateBool(forceDefinition bool, tree *EnvTree, val reflect.Value, keyChain []string) error {
 	v, err := tree.FindBool(keyChain...)
 
-	if forceDefinition && err != nil {
-		return err
-	}
-
-	if _, ok := err.(WrongTypeError); ok {
+	if err != nil {
+		if !forceDefinition {
+			if _, missing := err.(VariableNotFoundError); missing {
+				return nil
+			}
+		}
 		return err
 	}
 
@@ -144,15 +152,25 @@ func populateStruct(entries *[]entry, origStruct interface{}, tree *EnvTree, for
 }
 
 func isPointerToStruct(data interface{}) bool {
-	return !(reflect.TypeOf(data).Kind() != reflect.Ptr || reflect.TypeOf(data).Elem().Kind() != reflect.Struct)
+	typ := reflect.TypeOf(data)
+	return typ != nil && typ.Kind() == reflect.Ptr && typ.Elem().Kind() == reflect.Struct
 }
 
 func populateStructFromEnvTree(origStruct interface{}, tree *EnvTree, forceDefinition bool) error {
+	typ := reflect.TypeOf(origStruct)
+	if typ == nil {
+		return TypeUnsupported{"nil", "pointer to struct"}
+	}
 	if !isPointerToStruct(origStruct) {
-		return TypeUnsupported{reflect.TypeOf(origStruct).Kind().String(), "pointer to struct"}
+		return TypeUnsupported{typ.Kind().String(), "pointer to struct"}
 	}
 
-	entries := []entry{{reflect.TypeOf(origStruct).Elem(), reflect.ValueOf(origStruct).Elem(), []string{reflect.TypeOf(origStruct).Elem().Name()}}}
+	value := reflect.ValueOf(origStruct)
+	if value.IsNil() {
+		return TypeUnsupported{"nil pointer", "non-nil pointer to struct"}
+	}
+
+	entries := []entry{{typ.Elem(), value.Elem(), []string{typ.Elem().Name()}}}
 
 	for {
 		err := populateStruct(&entries, origStruct, tree, forceDefinition)

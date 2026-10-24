@@ -24,6 +24,39 @@ func TestPopulateStructWithNoPointersGiven(t *testing.T) {
 	assert.EqualError(t, err, `Type "int" is not supported : you must provide "pointer to struct"`)
 }
 
+func TestPopulateStructRejectsNilTargets(t *testing.T) {
+	var typedNil *struct{}
+	tree := EnvTree{}
+
+	methods := []struct {
+		name     string
+		populate func(interface{}) error
+	}{
+		{"normal", tree.PopulateStruct},
+		{"strict", tree.PopulateStructWithStrictMode},
+	}
+	targets := []struct {
+		name    string
+		value   interface{}
+		wantErr string
+	}{
+		{"nil interface", nil, `Type "nil" is not supported : you must provide "pointer to struct"`},
+		{"nil pointer", typedNil, `Type "nil pointer" is not supported : you must provide "non-nil pointer to struct"`},
+	}
+
+	for _, method := range methods {
+		t.Run(method.name, func(t *testing.T) {
+			for _, target := range targets {
+				t.Run(target.name, func(t *testing.T) {
+					var err error
+					assert.NotPanics(t, func() { err = method.populate(target.value) })
+					assert.EqualError(t, err, target.wantErr)
+				})
+			}
+		})
+	}
+}
+
 func TestPopulateStructWithInnerPointer(t *testing.T) {
 	type TEST7 struct {
 		TEST8  int
@@ -171,6 +204,27 @@ func TestPopulateStructWithStrictCheckDisabled(t *testing.T) {
 
 	assert.NoError(t, err)
 	assert.Equal(t, expected, actual, "Must popuplate struct with value given by environment variables")
+}
+
+func TestPopulateStructPreservesDefaultsForMissingValues(t *testing.T) {
+	type SETTINGS struct {
+		TEXT    string
+		COUNT   int
+		RATIO   float32
+		ENABLED bool
+	}
+
+	defer restoreEnvs()
+	setEnv("SETTINGS_COUNT", "7")
+
+	tree, err := NewEnvTree("^SETTINGS", "_")
+	assert.NoError(t, err)
+
+	actual := SETTINGS{TEXT: "keep", COUNT: 1, RATIO: 1.25, ENABLED: true}
+	err = tree.PopulateStruct(&actual)
+
+	assert.NoError(t, err)
+	assert.Equal(t, SETTINGS{TEXT: "keep", COUNT: 7, RATIO: 1.25, ENABLED: true}, actual)
 }
 
 func TestPopulateStructWithStrictCheckEnabled(t *testing.T) {
